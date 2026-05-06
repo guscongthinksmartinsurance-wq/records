@@ -6,6 +6,33 @@ import os
 st.set_page_config(page_title="The Nexus", layout="wide")
 st.title("Phân tích Tâm lý Hội thoại")
 
+# --- BỘ LỌC CHỮ DÀNH CHO FILE BÁO CÁO TẢI VỀ ---
+def lam_sach_bao_cao(text_markdown):
+    # Tách từng dòng để xử lý định dạng
+    lines = text_markdown.split('\n')
+    cleaned_lines = []
+    
+    for line in lines:
+        # Nếu là dòng tiêu đề lớn (bắt đầu bằng ### hoặc ##)
+        if line.strip().startswith('###') or line.strip().startswith('##'):
+            header_text = line.replace('###', '').replace('##', '').strip()
+            # Loại bỏ các dấu bôi đậm nếu có trong tiêu đề
+            header_text = header_text.replace('**', '').replace('*', '')
+            
+            # Tạo block tiêu đề cực kỳ rõ ràng, dễ nhìn
+            cleaned_lines.append("\n" + "="*55)
+            cleaned_lines.append(f" MỤC: {header_text.upper()}")
+            cleaned_lines.append("="*55 + "\n")
+        else:
+            # Xóa bỏ các ký tự bôi đậm dòng ** của markdown rối mắt
+            line_clean = line.replace('**', '')
+            # Đổi các dấu gạch đầu dòng của AI thành dấu chấm tròn cho thoáng
+            if line_clean.strip().startswith('* ') or line_clean.strip().startswith('- '):
+                line_clean = "  • " + line_clean.strip()[2:]
+            cleaned_lines.append(line_clean)
+            
+    return "\n".join(cleaned_lines)
+
 # --- LẤY API KEY ---
 # Ưu tiên lấy từ Secrets của Streamlit Cloud để bảo mật
 google_api_key = st.secrets.get("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY")
@@ -63,14 +90,17 @@ if google_api_key:
                         ])
                         
                         st.divider()
-                        st.subheader("📊 Kết quả phân tích chi tiết")
+                        st.subheader("📊 Kết quả phân tích")
                         st.markdown(response.text)
+
                         
-                        # Nút tải báo cáo
+                        bao_cao_sach = lam_sach_bao_cao(response.text)
+                        
+                        # Nút tải báo cáo đã được làm sạch trực quan
                         st.download_button(
-                            label="Tải báo cáo",
-                            data=response.text,
-                            file_name=f"Bao_cao_{uploaded_file.name}.txt",
+                            label="Tải báo cáo sạch về máy 📥",
+                            data=bao_cao_sach,
+                            file_name=f"Bao_cao_sach_{uploaded_file.name}.txt",
                             mime="text/plain"
                         )
                         
