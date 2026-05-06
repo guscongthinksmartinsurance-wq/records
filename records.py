@@ -3,16 +3,15 @@ import google.generativeai as genai
 import os
 
 # --- CẤU HÌNH GIAO DIỆN ---
-st.set_page_config(page_title="Hệ thống Đánh giá Sale - Team Công", layout="wide")
-st.title("🛡️ Trợ lý Phân tích Tâm lý Hội thoại")
-st.write("Giải pháp thực chiến dành riêng cho Sales Manager.")
+st.set_page_config(page_title="The Nexus", layout="wide")
+st.title("Phân tích Tâm lý Hội thoại")
 
 # --- LẤY API KEY ---
 # Ưu tiên lấy từ Secrets của Streamlit Cloud để bảo mật
 google_api_key = st.secrets.get("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY")
 
 with st.sidebar:
-    st.header("Cấu hình hệ thống")
+    st.header("Cấu Hình")
     if not google_api_key:
         google_api_key = st.text_input("Nhập Google API Key", type="password")
         st.info("Anh lấy Key tại: aistudio.google.com")
@@ -35,7 +34,7 @@ if google_api_key:
         uploaded_file = st.file_uploader("Kéo thả file record của nhân viên vào đây (mp3, wav, m4a)", type=["mp3", "wav", "m4a"])
 
         if uploaded_file is not None:
-            if st.button("Bắt đầu mổ xẻ"):
+            if st.button("Bắt đầu"):
                 try:
                     with st.spinner(f"Đang phân tích bằng {target_model.split('/')[-1]}..."):
                         # Đọc dữ liệu file âm thanh
@@ -69,7 +68,7 @@ if google_api_key:
                         
                         # Nút tải báo cáo
                         st.download_button(
-                            label="Tải báo cáo về máy",
+                            label="Tải báo cáo",
                             data=response.text,
                             file_name=f"Bao_cao_{uploaded_file.name}.txt",
                             mime="text/plain"
