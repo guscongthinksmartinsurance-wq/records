@@ -25,7 +25,7 @@ if google_api_key:
             try:
                 with st.spinner("Gemini đang nghe và phân tích..."):
                     # Khởi tạo model Gemini 1.5 Pro (rất mạnh về xử lý file âm thanh)
-                    model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
+                    model = genai.GenerativeModel(model_name="gemini-1.5-flash-latest")
                     
                     # Gemini có khả năng đọc trực tiếp file audio mà không cần qua Whisper
                     audio_data = uploaded_file.read()
