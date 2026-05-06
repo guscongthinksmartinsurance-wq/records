@@ -35,7 +35,16 @@ if google_api_key:
                     Hãy phân tích file ghi âm này với thái độ thẳng thắn, sâu sắc, không máy móc.
                     
                     YÊU CẦU PHÂN TÍCH (9 TIÊU CHÍ):
-                    (Dán bộ 9 tiêu chí của anh vào đây...)
+                    1. Cốt truyện & Điểm mấu chốt (Gạch đầu dòng ngắn gọn).
+                    2. Vấn đề thực sự của khách hàng (Insight ngầm, không phải điều họ nói ra).
+                    3. Hiệu quả xử lý: Tư vấn viên có "chạm" đúng nỗi đau của khách không?
+                    4. Mức độ giải quyết: (Chưa xong/Xong một phần/Triệt để/Có kế hoạch).
+                    5. Độ "Người" & Đồng cảm: Có nói giọng máy móc, văn mẫu không? Có thực sự nghe khách không?
+                    6. Kỹ thuật chuyên môn: Phân tích tính logic và kiến thức IUL trong cuộc gọi.
+                    7. Gót chân Achilles: Chỉ rõ điểm yếu và TẠI SAO (về mặt tâm lý) nhân viên lại mắc lỗi đó.
+                       Đưa ra mẫu câu "đời" hơn để khắc phục.
+                    8. Lộ trình cải thiện: 3 việc cần làm cho cuộc gọi sau.
+                    9. Câu hỏi chiến lược: 1-2 câu hỏi để làm chủ hoàn toàn thế trận.
                     """
                     
                     # Gửi file và prompt cho Gemini
