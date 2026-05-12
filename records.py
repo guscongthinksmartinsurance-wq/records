@@ -4,7 +4,7 @@ import os
 
 # --- CẤU HÌNH GIAO DIỆN ---
 st.set_page_config(page_title="The Nexus", layout="wide")
-st.title("Phân tích Tâm lý Hội thoại")
+st.title("Phân tích Records")
 
 # --- BỘ LỌC CHỮ DÀNH CHO FILE BÁO CÁO TẢI VỀ ---
 def lam_sach_bao_cao(text_markdown):
@@ -58,7 +58,7 @@ if google_api_key:
         
         model = genai.GenerativeModel(model_name=target_model)
         
-        uploaded_file = st.file_uploader("Kéo thả file record của nhân viên vào đây (mp3, wav, m4a)", type=["mp3", "wav", "m4a"])
+        uploaded_file = st.file_uploader("Kéo thả file record vào đây (mp3, wav, m4a)", type=["mp3", "wav", "m4a"])
 
         if uploaded_file is not None:
             if st.button("Bắt đầu"):
