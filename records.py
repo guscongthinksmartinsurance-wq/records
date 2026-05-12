@@ -90,7 +90,7 @@ if google_api_key:
                     status.update(label="✅ Đã phân tích xong!", state="complete", expanded=False)
 
                 # Hiển thị kết quả trong Card đã được CSS
-                st.markdown(f'<div class="analysis-card">{response.text}</div>', unsafe_allow_True=True)
+                st.markdown(f'<div class="analysis-card">{response.text}</div>', unsafe_allow_html=True)
                 
                 # Tải báo cáo
                 st.divider()
