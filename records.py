@@ -1,113 +1,107 @@
 import streamlit as st
 import google.generativeai as genai
 import os
+import time
 
 # --- CẤU HÌNH GIAO DIỆN ---
-st.set_page_config(page_title="The Nexus", layout="wide")
-st.title("Phân tích Records")
+st.set_page_config(page_title="The Nexus | Behavioral Analysis", layout="wide")
 
-# --- BỘ LỌC CHỮ DÀNH CHO FILE BÁO CÁO TẢI VỀ ---
+# Đọc file CSS riêng
+with open("style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
 def lam_sach_bao_cao(text_markdown):
-    # Tách từng dòng để xử lý định dạng
     lines = text_markdown.split('\n')
     cleaned_lines = []
-    
     for line in lines:
-        # Nếu là dòng tiêu đề lớn (bắt đầu bằng ### hoặc ##)
         if line.strip().startswith('###') or line.strip().startswith('##'):
-            header_text = line.replace('###', '').replace('##', '').strip()
-            # Loại bỏ các dấu bôi đậm nếu có trong tiêu đề
-            header_text = header_text.replace('**', '').replace('*', '')
-            
-            # Tạo block tiêu đề cực kỳ rõ ràng, dễ nhìn
-            cleaned_lines.append("\n" + "="*55)
-            cleaned_lines.append(f" MỤC: {header_text.upper()}")
-            cleaned_lines.append("="*55 + "\n")
+            header_text = line.replace('#', '').strip().upper()
+            cleaned_lines.append(f"\n{'='*55}\n MỤC: {header_text}\n{'='*55}\n")
         else:
-            # Xóa bỏ các ký tự bôi đậm dòng ** của markdown rối mắt
             line_clean = line.replace('**', '')
-            # Đổi các dấu gạch đầu dòng của AI thành dấu chấm tròn cho thoáng
             if line_clean.strip().startswith('* ') or line_clean.strip().startswith('- '):
                 line_clean = "  • " + line_clean.strip()[2:]
             cleaned_lines.append(line_clean)
-            
     return "\n".join(cleaned_lines)
 
-# --- LẤY API KEY ---
-# Ưu tiên lấy từ Secrets của Streamlit Cloud để bảo mật
-google_api_key = st.secrets.get("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY")
-
+# --- SIDEBAR: BẢNG ĐIỀU KHIỂN ---
 with st.sidebar:
-    st.header("Cấu Hình")
+    st.title("⚙️ Điều khiển")
+    google_api_key = st.secrets.get("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY")
     if not google_api_key:
-        google_api_key = st.text_input("Nhập Google API Key", type="password")
-        st.info("Anh lấy Key tại: aistudio.google.com")
-    else:
-        st.success("✅ Đã kết nối Google AI")
+        google_api_key = st.text_input("API Key", type="password")
+    
+    st.markdown("---")
+    # Thông số độ gắt cho anh Công tùy chỉnh
+    temp = st.slider("Độ 'Gắt' & Sáng tạo (Temperature)", 0.0, 1.0, 0.7, 0.1)
+    st.caption("Thấp (0.0): Phân tích logic, thực tế. Cao (1.0): Rất gắt, xoáy sâu tâm lý.")
+    
+    st.markdown("---")
+    st.info("Dòng IUL - National Life Group")
 
 # --- XỬ LÝ CHÍNH ---
+st.title("🎯 The Nexus: Phân tích Records")
+
 if google_api_key:
-    try:
-        genai.configure(api_key=google_api_key)
-        
-        # Tự động dò tìm tên model khả dụng để tránh lỗi 404
-        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        # Ưu tiên chọn Flash cho nhanh và ổn định, nếu không có thì lấy Pro
-        target_model = next((m for m in available_models if 'gemini-1.5-flash' in m), 
-                            next((m for m in available_models if 'gemini-1.5-pro' in m), available_models[0]))
-        
-        model = genai.GenerativeModel(model_name=target_model)
-        
-        uploaded_file = st.file_uploader("Kéo thả file record vào đây (mp3, wav, m4a)", type=["mp3", "wav", "m4a"])
+    genai.configure(api_key=google_api_key)
+    available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+    target_model = next((m for m in available_models if 'gemini-1.5-flash' in m), available_models[0])
+    
+    # Áp dụng temperature vào cấu hình model
+    generation_config = {"temperature": temp}
+    model = genai.GenerativeModel(model_name=target_model, generation_config=generation_config)
+    
+    uploaded_file = st.file_uploader("Kéo thả file ghi âm vào đây", type=["mp3", "wav", "m4a"])
 
-        if uploaded_file is not None:
-            if st.button("Bắt đầu"):
-                try:
-                    with st.spinner(f"Đang phân tích bằng {target_model.split('/')[-1]}..."):
-                        # Đọc dữ liệu file âm thanh
-                        audio_data = uploaded_file.read()
-                        
-                        prompt = """
-                        Bạn là một chuyên gia tâm lý hành vi và Sales Manager lão luyện ngành bảo hiểm IUL. 
-                        Hãy phân tích file ghi âm này với thái độ thẳng thắn, sâu sắc, không máy móc, không thảo mai.
-
-                        YÊU CẦU PHÂN TÍCH THEO ĐÚNG 9 TIÊU CHÍ SAU:
-                        1. Cốt truyện & Điểm mấu chốt (Gạch đầu dòng ngắn gọn).
-                        2. Vấn đề thực sự của khách hàng (Insight ngầm, không phải điều họ nói lúc đầu).
-                        3. Hiệu quả xử lý: Tư vấn viên có "chạm" đúng nỗi đau của khách không?
-                        4. Mức độ giải quyết: (Chưa xong/Xong một phần/Triệt để/Có kế hoạch rõ ràng).
-                        5. Độ "Người" & Đồng cảm: Có nói giọng máy móc, văn mẫu không? Có thực sự lắng nghe không?
-                        6. Kỹ thuật chuyên môn: Phân tích tính logic và kiến thức IUL trong cuộc gọi.
-                        7. Gót chân Achilles: Chỉ rõ điểm yếu và TẠI SAO (về mặt tâm lý) nhân viên lại mắc lỗi đó. Đưa ra mẫu câu "đời" hơn để khắc phục.
-                        8. Lộ trình cải thiện: 3 việc cụ thể cần làm cho cuộc gọi sau.
-                        9. Câu hỏi chiến lược: 1-2 câu hỏi để làm chủ hoàn toàn thế trận.
-                        """
-                        
-                        # Gửi file và prompt cho Gemini
-                        response = model.generate_content([
-                            prompt,
-                            {"mime_type": "audio/mpeg", "data": audio_data}
-                        ])
-                        
-                        st.divider()
-                        st.subheader("📊 Kết quả phân tích")
-                        st.markdown(response.text)
-
-                        
-                        bao_cao_sach = lam_sach_bao_cao(response.text)
-                        
-                        # Nút tải báo cáo đã được làm sạch trực quan
-                        st.download_button(
-                            label="Tải báo cáo sạch về máy 📥",
-                            data=bao_cao_sach,
-                            file_name=f"Bao_cao_sach_{uploaded_file.name}.txt",
-                            mime="text/plain"
-                        )
-                        
-                except Exception as e:
-                    st.error(f"Lỗi khi xử lý file: {e}")
+    if uploaded_file:
+        if st.button("BẮT ĐẦU PHÂN TÍCH TÂM LÝ"):
+            try:
+                # Sử dụng st.status sinh động như anh yêu cầu
+                with st.status("Hệ thống đang làm việc...", expanded=True) as status:
+                    status.write("🎧 Đang nghe và chuyển hóa bản ghi...")
+                    audio_data = uploaded_file.read()
+                    time.sleep(1.5)
                     
-    except Exception as e:
-        st.error(f"Lỗi cấu hình API: {e}")
+                    status.write("🧠 Đang mổ xẻ tâm lý hành vi & logic IUL...")
+                    prompt = """
+                    Bạn là một chuyên gia tâm lý hành vi và Sales Manager lão luyện ngành bảo hiểm IUL Mỹ. 
+                    Phân tích file này với thái độ thẳng thắn, sâu sắc, không thảo mai. 
+                    Sử dụng ngôn ngữ đời thường, gãy gọn.
+
+                    YÊU CẦU ĐẶC BIỆT:
+                    - TRÍCH DẪN TRỰC TIẾP: Chỉ rõ "Ở phút thứ X, nhân viên nói câu [A], đây là biểu hiện của sự [thiếu tự tin/thảo mai/máy móc]".
+                    - KHẨU VỊ: Dùng thuật ngữ IUL (Index, Premium, Loan, Cash Value...) nhưng giải thích dưới góc độ tâm lý khách hàng lo sợ điều gì.
+
+                    CẤU TRÚC PHÂN TÍCH 9 TIÊU CHÍ:
+                    1. Cốt truyện & Điểm mấu chốt.
+                    2. Insight ngầm: Khách lo gì thực sự?
+                    3. Hiệu quả xử lý: Có "chạm" đúng nỗi đau không?
+                    4. Trạng thái kết thúc: Triệt để hay chưa?
+                    5. Độ "Người": Chỗ nào nói văn mẫu, máy móc?
+                    6. Kỹ thuật chuyên môn IUL.
+                    7. Gót chân Achilles: Lỗi tâm lý và mẫu câu "đời" hơn để thay thế.
+                    8. Lộ trình cải thiện: 3 việc cụ thể.
+                    9. Câu hỏi chiến lược: 1 câu hỏi để làm chủ thế trận.
+                    """
+                    
+                    response = model.generate_content([prompt, {"mime_type": "audio/mpeg", "data": audio_data}])
+                    time.sleep(1)
+                    status.write("📝 Đang hoàn thiện báo cáo chi tiết...")
+                    status.update(label="✅ Đã phân tích xong!", state="complete", expanded=False)
+
+                # Hiển thị kết quả trong Card đã được CSS
+                st.markdown(f'<div class="analysis-card">{response.text}</div>', unsafe_allow_True=True)
+                
+                # Tải báo cáo
+                st.divider()
+                st.download_button(
+                    label="Tải báo cáo sạch 📥",
+                    data=lam_sach_bao_cao(response.text),
+                    file_name=f"Nexus_Analysis_{uploaded_file.name}.txt",
+                    mime="text/plain"
+                )
+                    
+            except Exception as e:
+                st.error(f"Lỗi: {e}")
 else:
-    st.warning("Anh vui lòng nhập API Key để bắt đầu nhé!")
+    st.warning("Anh nhập API Key ở Sidebar nhé!")
