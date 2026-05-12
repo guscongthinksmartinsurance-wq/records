@@ -1,0 +1,47 @@
+/* Tổng thể nền và font */
+.main {
+    background-color: #f8f9fa;
+}
+
+/* Header chuyên nghiệp */
+.stTitle {
+    color: #1E3A8A !important;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800 !important;
+    letter-spacing: -1px;
+}
+
+/* Sidebar thẩm mỹ */
+[data-testid="stSidebar"] {
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
+}
+
+/* Nút Bắt đầu - Điểm nhấn chính */
+div.stButton > button:first-child {
+    background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+    color: white;
+    border-radius: 12px;
+    height: 4em;
+    width: 100%;
+    font-size: 18px !important;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+    transition: all 0.3s ease;
+}
+
+div.stButton > button:first-child:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(30, 58, 138, 0.4);
+}
+
+/* Card chứa kết quả phân tích */
+.analysis-card {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    border-left: 8px solid #1E3A8A;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
