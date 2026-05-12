@@ -63,25 +63,41 @@ if google_api_key:
                     time.sleep(1.5)
                     
                     status.write("🧠 Đang mổ xẻ tâm lý hành vi & logic IUL...")
-                    prompt = """
-                    Bạn là một chuyên gia tâm lý hành vi và Sales Manager lão luyện ngành bảo hiểm IUL Mỹ. 
-                    Phân tích file này với thái độ thẳng thắn, sâu sắc, không thảo mai. 
-                    Sử dụng ngôn ngữ đời thường, gãy gọn.
-
+                    prompt = f"""
+                    Bạn là một chuyên gia tâm lý hành vi và Sales Manager lão luyện ngành bảo hiểm IUL Mỹ (National Life Group). 
+                    Nhiệm vụ của bạn là phân tích file ghi âm với thái độ thẳng thắn, sâu sắc nhưng mang tính giáo dục cao. 
+                    Đừng chỉ bắt bẽ, hãy chỉ dẫn để nhân viên nhìn ra "điểm mù" trong giao tiếp của họ.
+                    
                     YÊU CẦU ĐẶC BIỆT:
-                    - TRÍCH DẪN TRỰC TIẾP: Chỉ rõ "Ở phút thứ X, nhân viên nói câu [A], đây là biểu hiện của sự [thiếu tự tin/thảo mai/máy móc]".
-                    - KHẨU VỊ: Dùng thuật ngữ IUL (Index, Premium, Loan, Cash Value...) nhưng giải thích dưới góc độ tâm lý khách hàng lo sợ điều gì.
-
-                    CẤU TRÚC PHÂN TÍCH 9 TIÊU CHÍ:
-                    1. Cốt truyện & Điểm mấu chốt.
-                    2. Insight ngầm: Khách lo gì thực sự?
-                    3. Hiệu quả xử lý: Có "chạm" đúng nỗi đau không?
-                    4. Trạng thái kết thúc: Triệt để hay chưa?
-                    5. Độ "Người": Chỗ nào nói văn mẫu, máy móc?
-                    6. Kỹ thuật chuyên môn IUL.
-                    7. Gót chân Achilles: Lỗi tâm lý và mẫu câu "đời" hơn để thay thế.
-                    8. Lộ trình cải thiện: 3 việc cụ thể.
-                    9. Câu hỏi chiến lược: 1 câu hỏi để làm chủ thế trận.
+                    - TRÍCH DẪN TRỰC TIẾP: Phải có thời gian (Phút:Giây) và câu nói cụ thể của nhân viên.
+                    - KHẨU VỊ: Dùng thuật ngữ IUL chuyên nghiệp nhưng giải thích theo tâm lý học "đời thường".
+                    - ĐỘ GẮT: Dựa trên mức Temperature {temp}, hãy đưa ra những nhận xét sắc bén tương ứng.
+                    
+                    CẤU TRÚC PHÂN TÍCH & CHỈ DẪN (9 TIÊU CHÍ):
+                    
+                    1. CỐT TRUYỆN & ĐIỂM MẤU CHỐT: Tóm tắt cực gọn diễn biến cuộc gọi.
+                    
+                    2. INSIGHT NGẦM & CHỈ DẪN TƯ DUY: Khách thực sự lo gì? 
+                       -> Chỉ dẫn: Thay vì nghe bề nổi, hãy dạy nhân viên cách "ngửi" ra nỗi sợ thực sự của khách qua tông giọng hoặc từ ngữ họ dùng.
+                    
+                    3. HIỆU QUẢ "CHẠM" & CÁCH KẾT NỐI: Có đánh trúng nỗi đau không? 
+                       -> Chỉ dẫn: Nếu chưa chạm, hãy chỉ cho nhân viên cách đặt câu hỏi gợi mở để khách tự nói ra vấn đề của họ thay vì mình tự suy đoán.
+                    
+                    4. TRẠNG THÁI KẾT THÚC & HƯỚNG GIẢI QUYẾT: Triệt để chưa? 
+                       -> Chỉ dẫn: Nếu chưa xong, hãy hướng dẫn cách "đặt gạch" cho cuộc gọi tiếp theo để khách không cảm thấy bị làm phiền mà là đang được giúp đỡ.
+                    
+                    5. ĐỘ "NGƯỜI" vs VĂN MẪU: Trích dẫn đoạn nói như máy. 
+                       -> Chỉ dẫn: Cách biến câu văn mẫu đó thành một lời tâm sự, chia sẻ đời thường để phá vỡ rào cản phòng thủ của khách.
+                    
+                    6. KỸ THUẬT IUL & CÁCH GIẢI THÍCH DỄ HIỂU: (Index, Premium, Cash Value...). 
+                       -> Chỉ dẫn: Dạy nhân viên cách ví von các khái niệm IUL khô khan thành những hình ảnh gần gũi (ví dụ: Cash Value như cái kho dự trữ mùa đông).
+                    
+                    7. GÓT CHÂN ACHILLES & MẪU CÂU "ĐỔI ĐỜI": Lỗi tâm lý nặng nhất. 
+                       -> Chỉ dẫn: Giải thích tại sao nói như cũ là sai tâm lý. Đưa ra 2 phương án nói mới: Một phương án an toàn và một phương án "sát thủ" để nhân viên tập luyện.
+                    
+                    8. LỘ TRÌNH CẢI THIỆN: 3 việc cụ thể cần làm ngay.
+                    
+                    9. CÂU HỎI CHIẾN LƯỢC: 1 câu hỏi duy nhất để lật ngược thế trận.
                     """
                     
                     response = model.generate_content([prompt, {"mime_type": "audio/mpeg", "data": audio_data}])
