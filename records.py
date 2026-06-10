@@ -6,57 +6,53 @@ import time
 # --- CẤU HÌNH GIAO DIỆN ---
 st.set_page_config(page_title="The Nexus | Behavioral Analysis", layout="wide")
 
-# Inject thêm CSS phong cách Zoom (Mịn màng, bo tròn, đổ bóng soft, tone sáng nhẹ tinh tế)
+# --- INJECT CSS ĐỒNG NHẤT TONE TỐI KIỂU ZOOM PREMIUM ---
 st.markdown("""
 <style>
-    /* Custom style cho các Tab */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 24px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        height: 50px;
-        white-space: pre-wrap;
-        background-color: transparent;
-        border-radius: 4px;
-        color: #6E7687;
-        font-weight: 600;
-        font-size: 16px;
-    }
-    .stTabs [data-baseweb="tab"]:hover {
-        color: #0B5CFF;
-    }
-    .stTabs [aria-selected="true"] {
-        color: #0B5CFF !important;
-        border-bottom-color: #0B5CFF !important;
-    }
-
-    /* Khung nhập liệu tinh tế kiểu Zoom */
-    .zoom-panel-left {
-        background-color: #FFFFFF;
-        padding: 30px;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-        border: 1px solid #EAF0F6;
+    /* Đồng bộ nền của Tab 2 thành màu tối dịu tinh tế */
+    [data-testid="stAppViewContainer"] {
+        background-color: #0B0E14 !important;
     }
     
-    /* Thiết kế thẻ Card bảng giá của Zoom */
+    /* Panel Nhập liệu bên trái - Đổi sang nền tối sâu, bo góc mịn */
+    .zoom-panel-left {
+        background-color: #161A23;
+        padding: 30px;
+        border-radius: 16px;
+        border: 1px solid #222938;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Label chữ trong form đổi sang màu trắng xám nhẹ cho dễ đọc trên nền tối */
+    .zoom-panel-left label, .zoom-panel-left p {
+        color: #E2E8F0 !important;
+    }
+    
+    /* Thẻ Card kết quả bên phải - Tệp màu với nền nhưng đổ bóng nổi bật */
     .zoom-pricing-card {
-        background: #FFFFFF;
+        background: #161A23;
         border-radius: 16px;
         padding: 28px;
         margin-bottom: 20px;
-        border: 1px solid #EAF0F6;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+        border: 1px solid #222938;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         transition: all 0.3s ease;
     }
+    
+    /* Hiệu ứng bay bổng khi hover chuột qua card */
     .zoom-pricing-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 12px 30px rgba(11, 92, 255, 0.08);
+        box-shadow: 0 12px 30px rgba(11, 92, 255, 0.15);
+        border-color: #0B5CFF;
     }
+    
+    /* Card Khuyên dùng - Điểm nhấn với viền xanh Zoom sáng */
     .recommended-card {
         border: 1.5px solid #0B5CFF;
-        position: relative;
+        background: linear-gradient(180deg, #161A23 0%, #1A2232 100%);
     }
+    
+    /* Tag Nhãn nổi bật */
     .zoom-tag {
         background-color: #0B5CFF;
         color: white;
@@ -69,25 +65,27 @@ st.markdown("""
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
+    
+    /* Số tiền hiển thị lớn sắc nét */
     .price-text {
         font-size: 38px;
         font-weight: 800;
-        color: #0B5CFF;
+        color: #38BDF8; /* Đổi sang màu xanh Cyan sáng để nổi bật trên nền tối */
         margin: 10px 0;
         font-family: 'Inter', sans-serif;
     }
+    
     .price-subtext {
         font-size: 20px;
         font-weight: 700;
-        color: #111625;
+        color: #FFFFFF;
         margin-bottom: 15px;
     }
+    
     .zoom-bullet {
-        color: #6E7687;
+        color: #94A3B8;
         font-size: 14px;
         margin: 6px 0;
-        display: flex;
-        align-items: center;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -214,25 +212,27 @@ with tab2:
     st.markdown("<h2 style='color:#111625; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#6E7687; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
     
-    # Chia bố cục thành 2 cột đối xứng mượt mà (Tỷ lệ 5:5)
+    with st.container():
+    st.markdown("<h2 style='color:#FFFFFF; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#94A3B8; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
+    
     col_input, col_result = st.columns([1, 1], gap="large")
     
     with col_input:
+        # Toàn bộ form bọc trong class tối đã cấu hình ở trên
         st.markdown('<div class="zoom-panel-left">', unsafe_allow_html=True)
-        st.markdown("<h3 style='color:#111625; font-size:16px; font-weight:700; margin-bottom:15px;'>1. THÔNG TIN KHÁCH HÀNG</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>1. THÔNG TIN KHÁCH HÀNG</h3>", unsafe_allow_html=True)
         
-        # Hàng ngang: Giới tính & Tuổi
         c1, c2 = st.columns(2)
         with c1:
             gender = st.selectbox("Giới tính", ["Nữ", "Nam"])
         with c2:
             age = st.number_input("Tuổi hiện tại", min_value=1, max_value=100, value=35)
             
-        st.markdown("<hr style='border:0; border-top:1px solid #EAF0F6; margin:20px 0;'>", unsafe_allow_html=True)
-        st.markdown("<h3 style='color:#111625; font-size:16px; font-weight:700; margin-bottom:15px;'>2. TÌNH TRẠNG SỨC KHỎE & BỆNH LÝ</h3>", unsafe_allow_html=True)
+        st.markdown("<hr style='border:0; border-top:1px solid #222938; margin:20px 0;'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>2. TÌNH TRẠNG SỨC KHỎE & BỆNH LÝ</h3>", unsafe_allow_html=True)
         
         lung_habit = st.radio("Thói quen lá phổi", ["Không hút thuốc", "Có hút thuốc, vape, hoặc cần"], horizontal=True)
-        
         health_status = st.selectbox(
             "Tình trạng bệnh lý hiện tại",
             [
@@ -242,29 +242,25 @@ with tab2:
             ]
         )
         
-        st.markdown("<hr style='border:0; border-top:1px solid #EAF0F6; margin:20px 0;'>", unsafe_allow_html=True)
-        st.markdown("<h3 style='color:#111625; font-size:16px; font-weight:700; margin-bottom:15px;'>3. KHẢO SÁT CÔNG VIỆC, GIA ĐÌNH & ĐỜI SỐNG</h3>", unsafe_allow_html=True)
+        st.markdown("<hr style='border:0; border-top:1px solid #222938; margin:20px 0;'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>3. KHẢO SÁT CÔNG VIỆC, GIA ĐÌNH & ĐỜI SỐNG</h3>", unsafe_allow_html=True)
         
-        # Hàng ngang: Thời gian ở Mỹ & Công việc
         c3, c4 = st.columns(2)
         with c3:
             time_in_us = st.selectbox("Thời gian định cư ở Mỹ", ["Trên 3 năm", "Dưới 3 năm"])
         with c4:
             job_title = st.selectbox("Vị trí công việc", ["Thợ nail ăn chia 6/4", "Manager", "Chủ tiệm"])
             
-        # Hiển thị số ghế tiệm nếu là Chủ hoặc Manager
         num_chairs = "Không áp dụng"
         if job_title in ["Manager", "Chủ tiệm"]:
             num_chairs = st.selectbox("Quy mô số ghế của tiệm", ["3-5 ghế", "6-8 ghế", "Trên 10 ghế"])
             
-        # Hàng ngang: Hôn nhân & Số con
         c5, c6 = st.columns(2)
         with c5:
             marital_status = st.selectbox("Tình trạng hôn nhân", ["Đã kết hôn", "Độc thân"])
         with c6:
             num_children = st.selectbox("Số lượng con cái", ["1", "2", "3", "4", "Chưa có con"])
             
-        # Hàng ngang: Nhà cửa & Nghỉ hưu
         c7, c8 = st.columns(2)
         with c7:
             home_status = st.selectbox("Tình trạng nhà cửa tại Mỹ", ["Đã mua trả góp (Mortgage)", "Đang mướn nhà (Rent)"])
