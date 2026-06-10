@@ -125,52 +125,73 @@ with st.sidebar:
     st.divider()
     
     # Giữ nguyên logic lấy API Key gốc của anh
-    google_api_key = st.secrets.get("GOOGLE_API_KEY", "")
+    google_api_key = st.secrets.get("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY")
     if not google_api_key:
-        google_api_key = st.text_input("Nhập Google API Key:", type="password")
-
+        google_api_key = st.text_input("API Key", type="password")
+    
+    st.markdown("---")
+    # Thông số độ gắt cho anh Công tùy chỉnh
+    temp = st.slider("Độ 'Gắt' & Sáng tạo (Temperature)", 0.0, 1.0, 0.7, 0.1)
+    st.caption("Thấp (0.0): Phân tích logic, thực tế. Cao (1.0): Rất gắt, xoáy sâu tâm lý.")
+    
+    st.markdown("---")
+    st.info("Dòng IUL - National Life Group")
 
 # =====================================================================
 # CHẠY TÍNH NĂNG 1: PHÂN TÍCH CUỘC GỌI (BÊ NGUYÊN VĂN 100% CODE CŨ VÀ CẤU TRÚC MODEL GỐC)
 # =====================================================================
 if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
-    uploaded_file = st.file_uploader("Kéo thả hoặc chọn file ghi âm cuộc gọi (.mp3, .wav)", type=["mp3", "wav"])
+if google_api_key:
+    genai.configure(api_key=google_api_key)
+    available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+    target_model = next((m for m in available_models if 'gemini-1.5-flash' in m), available_models[0])
+    
+    # Áp dụng temperature vào cấu hình model
+    generation_config = {"temperature": temp}
+    model = genai.GenerativeModel(model_name=target_model, generation_config=generation_config)
+    
+    uploaded_file = st.file_uploader("Kéo thả file ghi âm vào đây", type=["mp3", "wav", "m4a"])
 
     if uploaded_file:
-        if not google_api_key:
-            st.warning("⚠️ Vui lòng nhập Google API Key để tiếp tục phân tích.")
-        else:
+        if st.button("BẮT ĐẦU PHÂN TÍCH TÂM LÝ"):
             try:
-                genai.configure(api_key=google_api_key)
-                
-                # SỬA LỖI TẠI ĐÂY: Trả về chính xác 100% cấu trúc gọi model ban đầu của anh để tránh lỗi 404
-                model = genai.GenerativeModel(model_name="gemini-1.5-pro")
-                
-                with st.status("🚀 Đang xử lý dữ liệu cuộc gọi...", expanded=True) as status:
+                # Sử dụng st.status sinh động như anh yêu cầu
+                with st.status("Hệ thống đang làm việc...", expanded=True) as status:
+                    status.write("🎧 Đang nghe và chuyển hóa bản ghi...")
                     audio_data = uploaded_file.read()
+                    time.sleep(1.5)
                     
-                    status.write("🎧 Đang lắng nghe và nhận diện giọng nói...")
-                    time.sleep(1)
-                    status.write("🧠 Đang bóc tách tâm lý hành vi và lỗi sales...")
+                    status.write("🧠 Đang mổ xẻ tâm lý hành vi & logic IUL...")
+                    prompt = f"""
+                    Bạn là một chuyên gia tâm lý hành vi và Sales Manager lão luyện ngành bảo hiểm IUL Mỹ (National Life Group). 
+                    Nhiệm vụ của bạn là phân tích file ghi âm với thái độ thẳng thắn, sâu sắc nhưng mang tính giáo dục cao. 
+                    Đừng chỉ bắt bẽ, hãy chỉ dẫn để nhân viên nhìn ra "điểm mù" trong giao tiếp của họ.
                     
-                    prompt = """
-                    Bạn là một chuyên gia huấn luyện kỹ năng Bán hàng (Sales Coach) gắt gao nhất, sở hữu tư duy phân tích tâm lý hành vi con người sâu sắc, đặc biệt nhạy bén với các dòng sản phẩm tài chính phức tạp như Bảo hiểm nhân thọ dòng IUL tại thị trường Mỹ. Nhiệm vụ của bạn là lắng nghe, mổ xẻ file ghi âm cuộc gọi tư vấn giữa nhân viên bảo hiểm (Sales) và khách hàng Việt Kiều, sau đó lập một bản báo cáo đánh giá cực kỳ chi tiết, sắc bén, không né tránh sai lầm và mang tính thực chiến cao.
-
-                    Yêu cầu phân tích và xuất báo cáo đầy đủ theo đúng 9 mục sau đây (Không được gộp mục, không được bỏ sót mục nào):
-
-                    1. TỔNG QUAN TÌNH HUỐNG & ĐỐI TƯỢNG: Phác họa rõ nét chân dung khách hàng (Ví dụ: Thợ nail, chủ tiệm, độ tuổi ước lượng, vùng bang cư trú, tâm lý lúc bắt máy) và bối cảnh diễn ra cuộc gọi.
+                    YÊU CẦU ĐẶC BIỆT:
+                    - TRÍCH DẪN TRỰC TIẾP: Phải có thời gian (Phút:Giây) và câu nói cụ thể của nhân viên.
+                    - KHẨU VỊ: Dùng thuật ngữ IUL chuyên nghiệp nhưng giải thích theo tâm lý học "đời thường".
+                    - ĐỘ GẮT: Dựa trên mức Temperature {temp}, hãy đưa ra những nhận xét sắc bén tương ứng.
                     
-                    2. ĐIỂM CHẠM TÂM LÝ ĐẦU TIÊN (FIRST IMPRESSION): Đánh giá cách sales mở đầu cuộc gọi trong 15-30 giây đầu tiên. Có phá băng thành công không? Giọng điệu nói chuyện có 'đời', tự nhiên hằng ngày không hay bị dội do dùng văn viết máy móc, cứng nhắc?
+                    CẤU TRÚC PHÂN TÍCH & CHỈ DẪN (9 TIÊU CHÍ):
                     
-                    3. ĐÁNH GIÁ CHẤT LƯỢNG KHAI THÁC THÔNG TIN: Phân tích cách sales đặt câu hỏi để tìm hiểu nhu cầu của khách. Sales đã hỏi những câu hỏi khéo léo nào để nắm tình hình tài chính, cấu trúc gia đình (số con phụ thuộc, nhà cửa), và tình trạng sức khỏe? Những câu nào hỏi quá trực diện gây mất tự nhiên cần sửa đổi?
+                    1. CỐT TRUYỆN & ĐIỂM MẤU CHỐT: Tóm tắt cực gọn diễn biến cuộc gọi.
                     
-                    4. LỖI THẢO MAI & ĂN HÙA (CRITICAL): Chỉ rõ những đoạn sales có hành vi khen ngợi giả tạo, thiếu chân thành để lấy lòng khách, hoặc đồng tình một cách vô điều kiện với những định kiến sai lầm của khách thay vì duy trì sự đúng đắn để đưa ra lời khuyên tài chính chuẩn xác.
+                    2. INSIGHT NGẦM & CHỈ DẪN TƯ DUY: Khách thực sự lo gì? 
+                       -> Chỉ dẫn: Thay vì nghe bề nổi, hãy dạy nhân viên cách "ngửi" ra nỗi sợ thực sự của khách qua tông giọng hoặc từ ngữ họ dùng.
                     
-                    5. LỖI CỨNG NHẮC LÝ THUYẾT & AI-STYLE: Bóc tách những đoạn sales giải thích quyền lợi sản phẩm IUL (Cash Value, Cap, Floor, tính năng miễn thuế) một cách khô khan, mang tính dạy đời, nhồi nhét lý thuyết thay vì dùng văn nói tự nhiên, dễ hiểu giữa người với người.
+                    3. HIỆU QUẢ "CHẠM" & CÁCH KẾT NỐI: Có đánh trúng nỗi đau không? 
+                       -> Chỉ dẫn: Nếu chưa chạm, hãy chỉ cho nhân viên cách đặt câu hỏi gợi mở để khách tự nói ra vấn đề của họ thay vì mình tự suy đoán.
                     
-                    6. PHẢN BIỆN KHÁCH HÀNG (HANDLING OBJECTIONS): Khi khách đưa ra các từ chối hoặc lo ngại (Kinh tế khó khăn, vắng khách mùa đông, áp lực chi phí trả góp nhà xe), sales xử lý có thấu tình đạt lý không? Có áp dụng tâm lý học hành vi để giải tỏa nỗi sợ cho khách không?
+                    4. TRẠNG THÁI KẾT THÚC & HƯỚNG GIẢI QUYẾT: Triệt để chưa? 
+                       -> Chỉ dẫn: Nếu chưa xong, hãy hướng dẫn cách "đặt gạch" cho cuộc gọi tiếp theo để khách không cảm thấy bị làm phiền mà là đang được giúp đỡ.
                     
-                    7. GÓT CHÂN ACHILLES & MẪU CÂU "ĐỔI ĐỜI": Tìm ra lỗi tâm lý hoặc kỹ thuật nặng nhất của sales khiến cuộc gọi thất bại. 
+                    5. ĐỘ "NGƯỜI" vs VĂN MẪU: Trích dẫn đoạn nói như máy. 
+                       -> Chỉ dẫn: Cách biến câu văn mẫu đó thành một lời tâm sự, chia sẻ đời thường để phá vỡ rào cản phòng thủ của khách.
+                    
+                    6. KỸ THUẬT IUL & CÁCH GIẢI THÍCH DỄ HIỂU: (Index, Premium, Cash Value...). 
+                       -> Chỉ dẫn: Dạy nhân viên cách ví von các khái niệm IUL khô khan thành những hình ảnh gần gũi (ví dụ: Cash Value như cái kho dự trữ mùa đông).
+                    
+                    7. GÓT CHÂN ACHILLES & MẪU CÂU "ĐỔI ĐỜI": Lỗi tâm lý nặng nhất. 
                        -> Chỉ dẫn: Giải thích tại sao nói như cũ là sai tâm lý. Đưa ra 2 phương án nói mới: Một phương án an toàn và một phương án "sát thủ" để nhân viên tập luyện.
                     
                     8. LỘ TRÌNH CẢI THIỆN: 3 việc cụ thể cần làm ngay.
@@ -183,10 +204,10 @@ if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
                     status.write("📝 Đang hoàn thiện báo cáo chi tiết...")
                     status.update(label="✅ Đã phân tích xong!", state="complete", expanded=False)
 
-                # Hiển thị kết quả trong Card đã được CSS gốc định dạng
+                # Hiển thị kết quả trong Card đã được CSS
                 st.markdown(f'<div class="analysis-card">{response.text}</div>', unsafe_allow_html=True)
                 
-                # Tải báo cáo gốc
+                # Tải báo cáo
                 st.divider()
                 st.download_button(
                     label="Tải báo cáo sạch 📥",
@@ -196,7 +217,9 @@ if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
                 )
                     
             except Exception as e:
-                st.error(f"Có lỗi xảy ra: {e}")
+                st.error(f"Lỗi: {e}")
+else:
+    st.warning("Anh nhập API Key ở Sidebar nhé!")
 
 
 # =====================================================================
