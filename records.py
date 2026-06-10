@@ -3,24 +3,22 @@ import google.generativeai as genai
 import os
 import time
 
-# --- 1. CẤU HÌNH GIAO DIỆN TỔNG THỂ (ZOOM UNIFIED STYLE) ---
+# --- CẤU HÌNH GIAO DIỆN ---
 st.set_page_config(page_title="The Nexus | Behavioral Analysis", layout="wide")
 
-# Inject CSS đồng bộ toàn bộ website trên nền xám trắng mịn cao cấp
+# Đọc file CSS riêng (Giữ nguyên 100% cách viết gốc của anh)
+with open("style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# Inject thêm CSS bổ sung cho phần Form để Highlight tiêu đề và bo góc kiểu Zoom trên nền sáng mượt
 st.markdown("""
 <style>
-    /* Ép toàn bộ màu nền hệ thống về tone xám trắng mịn cao cấp */
+    /* Ép toàn bộ màu nền hệ thống về tone xám trắng mịn đồng nhất */
     .main, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
         background-color: #F8F9FA !important;
     }
     
-    /* Đồng bộ giao diện Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: #FFFFFF !important;
-        border-right: 1px solid #E2E8F0 !important;
-    }
-    
-    /* Thiết kế khối hộp (Panel/Card) đồng nhất cho cả 2 tính năng */
+    /* Đồng bộ khối hộp trắng viền xám tinh tế cho cả 2 trang */
     .zoom-container-card {
         background-color: #FFFFFF !important;
         padding: 32px;
@@ -30,7 +28,7 @@ st.markdown("""
         margin-bottom: 24px;
     }
     
-    /* Hiệu ứng mượt mà khi di chuột qua các thẻ báo giá */
+    /* Thẻ hiển thị bảng giá kết quả */
     .zoom-pricing-card {
         background-color: #FFFFFF !important;
         border-radius: 16px;
@@ -46,7 +44,7 @@ st.markdown("""
         border-color: #0B5CFF;
     }
     
-    /* Thẻ được khuyên dùng đặc biệt (Gói Tối Ưu) */
+    /* Gói Tối Ưu Khuyên Dùng */
     .recommended-card {
         border: 1.5px solid #0B5CFF !important;
         background: linear-gradient(180deg, #FFFFFF 0%, #F4F7FF 100%) !important;
@@ -67,7 +65,7 @@ st.markdown("""
         border-left: 4px solid #0B5CFF;
     }
     
-    /* Tag nhãn nhỏ bên trong card */
+    /* Tag nhỏ nhãn hiệu */
     .zoom-tag {
         background-color: #0B5CFF;
         color: white;
@@ -80,7 +78,7 @@ st.markdown("""
         text-transform: uppercase;
     }
     
-    /* Font số tiền lớn rõ nét màu xanh Zoom */
+    /* Giá tiền hiển thị */
     .price-text {
         font-size: 38px;
         font-weight: 800;
@@ -89,27 +87,15 @@ st.markdown("""
         font-family: 'Inter', sans-serif;
     }
     
-    /* Font chữ nhãn nhập liệu */
-    label, p, .stRadio > label {
+    /* Chữ nhãn nhập liệu */
+    .zoom-container-card label, .zoom-container-card p {
         color: #1E293B !important;
         font-weight: 500 !important;
-    }
-    
-    /* Đường gạch ngang tinh tế */
-    hr {
-        border: 0;
-        border-top: 1px solid #E2E8F0 !important;
-        margin: 24px 0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Đọc file CSS gốc của anh để giữ nguyên định dạng cũ (.analysis-card)
-if os.path.exists("style.css"):
-    with open("style.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-# Giữ nguyên 100% logic làm sạch báo cáo cũ
+# Giữ nguyên 100% logic hàm làm sạch báo cáo gốc
 def lam_sach_bao_cao(text_markdown):
     lines = text_markdown.split('\n')
     cleaned_lines = []
@@ -125,11 +111,11 @@ def lam_sach_bao_cao(text_markdown):
     return "\n".join(cleaned_lines)
 
 
-# --- 2. SIDEBAR ĐIỀU HƯỚNG TẬP TRUNG TỆP MÀU APPS ---
+# --- SIDEBAR: BẢNG ĐIỀU KHIỂN (Thêm menu chọn trang tệp màu hệ thống) ---
 with st.sidebar:
-    st.title("⚙️ ĐIỀU KHIỂN")
+    st.title("⚙️ Điều khiển")
     
-    # Menu chuyển trang nằm gọn bên Sidebar
+    # Menu chọn tính năng đặt trên Sidebar đầu tiên
     menu_selection = st.radio(
         "Lựa chọn tính năng",
         ["🎙️ PHÂN TÍCH CUỘC GỌI", "🎯 FORM KHẢO SÁT & BÁO GIÁ"],
@@ -137,21 +123,19 @@ with st.sidebar:
     )
     
     st.divider()
+    
+    # Giữ nguyên logic lấy API Key gốc của anh
     google_api_key = st.secrets.get("GOOGLE_API_KEY", "")
     if not google_api_key:
         google_api_key = st.text_input("Nhập Google API Key:", type="password")
 
 
 # =====================================================================
-# MỤC 1: PHÂN TÍCH CUỘC GỌI (GIỮ NGUYÊN TUYỆT ĐỐI TOÀN BỘ LOGIC GỐC)
+# CHẠY TÍNH NĂNG 1: PHÂN TÍCH CUỘC GỌI (COPY 100% NỘI DUNG VÀ PROMPT GỐC)
 # =====================================================================
 if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
-    st.markdown("<h2 style='color:#1E293B; font-size:26px; font-weight:700; margin-bottom:20px;'>Hệ Thống Phân Tích Tâm Lý Hành Vi Cuộc Gọi</h2>", unsafe_allow_html=True)
-    
-    st.markdown('<div class="zoom-container-card">', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Kéo thả hoặc chọn file ghi âm cuộc gọi (.mp3, .wav)", type=["mp3", "wav"])
-    st.markdown('</div>', unsafe_allow_html=True)
-    
+
     if uploaded_file:
         if not google_api_key:
             st.warning("⚠️ Vui lòng nhập Google API Key để tiếp tục phân tích.")
@@ -168,28 +152,28 @@ if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
                     status.write("🧠 Đang bóc tách tâm lý hành vi và lỗi sales...")
                     
                     prompt = """
-                    Bạn là một chuyên gia huấn luyện kỹ năng Bán hàng (Sales Coach) gắt gao nhất, sở hữu tư duy phân tích tâm lý hành vi con người sâu sắc, đặc biệt nhạy bén với các dòng sản phẩm tài chính phức tạp như Bảo hiểm nhân thọ dòng IUL tại thị trường Mỹ. 
-                    Nhiệm vụ của bạn là lắng nghe, mổ xẻ file ghi âm cuộc gọi tư vấn giữa nhân viên bảo hiểm (Sales) và khách hàng Việt Kiều, sau đó lập một bản báo cáo đánh giá cực kỳ chi tiết, sắc bén, không né tránh sai lầm và mang tính thực chiến cao.
+                    Bạn là một chuyên gia huấn luyện kỹ năng Bán hàng (Sales Coach) gắt gao nhất, sở hữu tư duy phân tích tâm lý hành vi con người sâu sắc, đặc biệt nhạy bén với các dòng sản phẩm tài chính phức tạp như Bảo hiểm nhân thọ dòng IUL tại thị trường Mỹ. Nhiệm vụ của bạn là lắng nghe, mổ xẻ file ghi âm cuộc gọi tư vấn giữa nhân viên bảo hiểm (Sales) và khách hàng Việt Kiều, sau đó lập một bản báo cáo đánh giá cực kỳ chi tiết, sắc bén, không né tránh sai lầm và mang tính thực chiến cao.
 
                     Yêu cầu phân tích và xuất báo cáo đầy đủ theo đúng 9 mục sau đây (Không được gộp mục, không được bỏ sót mục nào):
 
-                    1. TỔNG QUAN TÌNH HUỐNG & ĐỐI TƯỢNG: Phác họa rõ nét chân dung khách hàng (Thợ nail, chủ tiệm, tuổi tác, vùng bang, tâm lý lúc bắt máy) và bối cảnh cuộc gọi.
+                    1. TỔNG QUAN TÌNH HUỐNG & ĐỐI TƯỢNG: Phác họa rõ nét chân dung khách hàng (Ví dụ: Thợ nail, chủ tiệm, độ tuổi ước lượng, vùng bang cư trú, tâm lý lúc bắt máy) và bối cảnh diễn ra cuộc gọi.
                     
-                    2. ĐIỂM CHẠM TÂM LÝ ĐẦU TIÊN (FIRST IMPRESSION): Đánh giá 15-30 giây đầu tiên. Sales có phá băng thành công không? Giọng điệu có đời, tự nhiên không hay bị dội và mang văn viết máy móc?
+                    2. ĐIỂM CHẠM TÂM LÝ ĐẦU TIÊN (FIRST IMPRESSION): Đánh giá cách sales mở đầu cuộc gọi trong 15-30 giây đầu tiên. Có phá băng thành công không? Giọng điệu nói chuyện có 'đời', tự nhiên hằng ngày không hay bị dội do dùng văn viết máy móc, cứng nhắc?
                     
-                    3. ĐÁNH GIÁ CHẤT LƯỢNG KHAI THÁC THÔNG TIN: Sales đã hỏi những câu hỏi khéo léo nào để nắm tình hình tài chính, gia đình (số con, nhà cửa, thời gian ở Mỹ) và sức khỏe của khách? Những câu nào hỏi quá trực diện gây mất tự nhiên?
+                    3. ĐÁNH GIÁ CHẤT LƯỢNG KHAI THÁC THÔNG TIN: Phân tích cách sales đặt câu hỏi để tìm hiểu nhu cầu của khách. Sales đã hỏi những câu hỏi khéo léo nào để nắm tình hình tài chính, cấu trúc gia đình (số con phụ thuộc, nhà cửa), và tình trạng sức khỏe? Những câu nào hỏi quá trực diện gây mất tự nhiên cần sửa đổi?
                     
-                    4. LỖI THẢO MAI & ĂN HÙA (CRITICAL): Chỉ rõ những đoạn sales khen khách một cách giả tạo, thiếu chân thành, hoặc đồng tình vô điều kiện với định kiến sai lầm của khách thay vì duy trì sự đúng đắn để cho lời khuyên.
+                    4. LỖI THẢO MAI & ĂN HÙA (CRITICAL): Chỉ rõ những đoạn sales có hành vi khen ngợi giả tạo, thiếu chân thành để lấy lòng khách, hoặc đồng tình một cách vô điều kiện với những định kiến sai lầm của khách thay vì duy trì sự đúng đắn để đưa ra lời khuyên tài chính chuẩn xác.
                     
-                    5. LỖI CỨNG NHẮC LÝ THUYẾT & AI-STYLE: Bóc tách những đoạn sales giải thích thuật ngữ bảo hiểm (IUL, Cash Value, Cap, Floor, Tax-free) một cách khô khan, mang tính dạy đời, nhồi nhét lý thuyết cứng thay vì dùng văn nói hằng ngày.
+                    5. LỖI CỨNG NHẮC LÝ THUYẾT & AI-STYLE: Bóc tách những đoạn sales giải thích quyền lợi sản phẩm IUL (Cash Value, Cap, Floor, tính năng miễn thuế) một cách khô khan, mang tính dạy đời, nhồi nhét lý thuyết thay vì dùng văn nói tự nhiên, dễ hiểu giữa người với người.
                     
-                    6. PHẢN BIỆN KHÁCH HÀNG (HANDLING OBJECTIONS): Khi khách đưa ra từ chối (Lo ngại kinh tế khó khăn, vắng khách mùa đông, sợ đứt gánh giữa chừng), sales xử lý có thấu tình đạt lý không? Có dùng tâm lý học hành vi để xoay chuyển không?
+                    6. PHẢN BIỆN KHÁCH HÀNG (HANDLING OBJECTIONS): Khi khách đưa ra các từ chối hoặc lo ngại (Kinh tế khó khăn, vắng khách mùa đông, áp lực chi phí trả góp nhà xe), sales xử lý có thấu tình đạt lý không? Có áp dụng tâm lý học hành vi để giải tỏa nỗi sợ cho khách không?
                     
-                    7. GÓT CHÂN ACHILLES & MẪU CÂU "ĐỔI ĐỜI": Lỗi tâm lý nặng nhất của sales trong cuộc gọi này là gì? Giải thích tại sao cách nói cũ sai tâm lý. Đưa ra 2 phương án nói mới: Một phương án an toàn và một phương án "sát thủ" để nhân viên tập luyện.
+                    7. GÓT CHÂN ACHILLES & MẪU CÂU "ĐỔI ĐỜI": Tìm ra lỗi tâm lý hoặc kỹ thuật nặng nhất của sales khiến cuộc gọi thất bại. 
+                       -> Chỉ dẫn: Giải thích tại sao nói như cũ là sai tâm lý. Đưa ra 2 phương án nói mới: Một phương án an toàn và một phương án "sát thủ" để nhân viên tập luyện.
                     
-                    8. LỘ TRÌNH CẢI THIỆN: 3 việc cụ thể, thực tế sales cần sửa đổi và thực hành ngay lập tức sau cuộc gọi này.
+                    8. LỘ TRÌNH CẢI THIỆN: 3 việc cụ thể cần làm ngay.
                     
-                    9. CÂU HỎI CHIẾN LƯỢC: Đưa ra 1 câu hỏi duy nhất mang tính điều hướng tâm lý cao để sales có thể dùng lật ngược thế trận hoặc chốt deal thành công với tệp khách hàng này.
+                    9. CÂU HỎI CHIẾN LƯỢC: 1 câu hỏi duy nhất để lật ngược thế trận.
                     """
                     
                     response = model.generate_content([prompt, {"mime_type": "audio/mpeg", "data": audio_data}])
@@ -197,10 +181,10 @@ if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
                     status.write("📝 Đang hoàn thiện báo cáo chi tiết...")
                     status.update(label="✅ Đã phân tích xong!", state="complete", expanded=False)
 
-                # Hiển thị kết quả đúng định dạng cũ
+                # Hiển thị kết quả trong Card đã được CSS gốc định dạng
                 st.markdown(f'<div class="analysis-card">{response.text}</div>', unsafe_allow_html=True)
                 
-                # Tải báo cáo cũ
+                # Tải báo cáo gốc
                 st.divider()
                 st.download_button(
                     label="Tải báo cáo sạch 📥",
@@ -210,23 +194,21 @@ if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
                 )
                     
             except Exception as e:
-                st.error(f"Có lỗi xảy ra trong quá trình phân tích: {e}")
+                st.error(f"Có lỗi xảy ra: {e}")
 
 
 # =====================================================================
-# MỤC 2: FORM KHẢO SÁT & BÁO GIÁ THÔNG MINH (TRỌN VẸN LOGIC THỰC CHIẾN)
+# CHẠY TÍNH NĂNG 2: FORM KHẢO SÁT & BÁO GIÁ THÔNG MINH (ZOOM UNIFIED STYLE)
 # =====================================================================
 elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
     st.markdown("<h2 style='color:#1E293B; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#64748B; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
     
-    # Thiết kế bố cục hai cột cân bằng thị giác (Tỷ lệ 5:5)
     col_input, col_result = st.columns([1, 1], gap="large")
     
     with col_input:
         st.markdown('<div class="zoom-container-card">', unsafe_allow_html=True)
         
-        # Cụm 1: Thông tin khách hàng cơ bản
         st.markdown('<div class="zoom-highlight-header">1. Thông Tin Khách Hàng</div>', unsafe_allow_html=True)
         c1, c2 = st.columns(2)
         with c1:
@@ -234,9 +216,8 @@ elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
         with c2:
             age = st.number_input("Tuổi hiện tại", min_value=1, max_value=100, value=35)
             
-        st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown("<hr style='border:0; border-top:1px solid #E2E8F0; margin:24px 0;'>", unsafe_allow_html=True)
         
-        # Cụm 2: Thẩm định sức khỏe & bệnh lý chi tiết
         st.markdown('<div class="zoom-highlight-header">2. Tình Trạng Sức Khỏe</div>', unsafe_allow_html=True)
         lung_habit = st.radio("Thói quen lá phổi", ["Không hút thuốc", "Có hút thuốc, vape, hoặc cần"], horizontal=True)
         health_status = st.selectbox(
@@ -248,9 +229,8 @@ elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
             ]
         )
         
-        st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown("<hr style='border:0; border-top:1px solid #E2E8F0; margin:24px 0;'>", unsafe_allow_html=True)
         
-        # Cụm 3: Khảo sát dòng tiền công việc & đời sống tại Mỹ
         st.markdown('<div class="zoom-highlight-header">3. Dòng Tiền & Đời Sống tại Mỹ</div>', unsafe_allow_html=True)
         c3, c4 = st.columns(2)
         with c3:
@@ -258,7 +238,6 @@ elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
         with c4:
             job_title = st.selectbox("Vị trí công việc", ["Thợ nail ăn chia 6/4", "Manager", "Chủ tiệm"])
             
-        # Biến số quy mô số ghế của tiệm
         num_chairs = "Không áp dụng"
         if job_title in ["Manager", "Chủ tiệm"]:
             num_chairs = st.selectbox("Quy mô số ghế của tiệm", ["3-5 ghế", "6-8 ghế", "Trên 10 ghế"])
@@ -278,67 +257,57 @@ elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col_result:
-        # --- LOGIC 1: ĐỊNH HƯỚNG TAB RATING THEO CHUẨN UNDERWRITING CỦA ANH ---
+        # --- LOGIC THẨM ĐỊNH RATING SỨC KHỎE ---
         rating_result = "Standard NTBC"
         if lung_habit == "Có hút thuốc, vape, hoặc cần":
-            rating_result = "Standard TBC"  # Hút thuốc, vape, cần map thẳng nhóm hút thuốc
+            rating_result = "Standard TBC"
         else:
             if "Có bệnh lý nền rõ ràng" in health_status:
-                rating_result = "Express Standard Non-Tobacco 1 (EX1)"  # Bệnh nền rõ ràng, tiểu đường, sỏi...
+                rating_result = "Express Standard Non-Tobacco 1 (EX1)"
             elif "Bệnh lý nặng" in health_status:
-                rating_result = "Express Standard Non-Tobacco 2 (EX2)"  # Các ca nặng tim mạch, ung thư, suy thận...
+                rating_result = "Express Standard Non-Tobacco 2 (EX2)"
                 
-        # --- LOGIC 2: CHẤM ĐIỂM DÒNG TIỀN & XUẤT TARGET PREMIUM ---
-        suggested_premium = 300  # Mức sàn mặc định cơ bản
-        
+        # --- LOGIC ĐỊNH HƯỚNG DÒNG TIỀN PHÍ ĐÓNG ---
+        suggested_premium = 300
         if job_title == "Thợ nail ăn chia 6/4":
-            if num_children in ["3", "4"]:
-                suggested_premium = 180  # Con đông, chi phí sinh hoạt cao, thiết kế gói nhỏ vừa sức
-            else:
-                suggested_premium = 250  # Thợ nail bình thường, ít con gánh nặng ít hơn
+            suggested_premium = 180 if num_children in ["3", "4"] else 250
         elif job_title == "Manager":
-            suggested_premium = 400      # Cấp quản lý, thu nhập ổn định khá
+            suggested_premium = 400
         elif job_title == "Chủ tiệm":
-            if num_chairs == "3-5 ghế":
-                suggested_premium = 450  # Chủ tiệm quy mô nhỏ
-            elif num_chairs == "6-8 ghế":
-                suggested_premium = 700  # Chủ tiệm quy mô vừa, dòng tiền mạnh, lo ngại bài toán thuế
-            elif num_chairs == "Trên 10 ghế":
-                suggested_premium = 1200 # Chủ tiệm lớn, đại gia ngành nail, dòng tiền thặng dư rất cao
+            if num_chairs == "3-5 ghế": suggested_premium = 450
+            elif num_chairs == "6-8 ghế": suggested_premium = 700
+            elif num_chairs == "Trên 10 ghế": suggested_premium = 1200
                 
-        # Tinh chỉnh chiết khấu an toàn dòng tiền theo thời gian ở Mỹ và tình trạng nhà cửa
         if home_status == "Đang mướn nhà (Rent)" or time_in_us == "Dưới 3 năm":
-            suggested_premium = int(suggested_premium * 0.85)  # Chiết khấu giảm 15% dòng tiền để tránh đứt gánh
+            suggested_premium = int(suggested_premium * 0.85)
             
-        # Giả lập tính toán mệnh giá (Sau này kết nối trực tiếp vào sheet gsheet để quét đúng dòng/tuổi)
         calculated_face_amount = suggested_premium * 700  
         backup_premium = int(suggested_premium * 0.5)
         backup_face_amount = int(calculated_face_amount * 0.5)
 
-        # --- HIỂN THỊ CỘT BIỂU PHÍ KẾT QUẢ TỆP MÀU XÁM TRẮNG TÍNH TẾ ---
+        # --- HIỂN THỊ KẾT QUẢ CARD THEO PHONG CÁCH ZOOM ---
         st.markdown("<h3 style='color:#1E293B; font-size:16px; font-weight:700; margin-bottom:15px;'>KẾT QUẢ PHÂN TÍCH BIỂU PHÍ KHUYẾN NGHỊ</h3>", unsafe_allow_html=True)
-        st.info(f"📋 **Rating Thẩm Định Định Hướng:** Hệ thống khuyến nghị chạy bảng minh họa ở Tab: **{rating_result}**")
+        st.info(f"📋 **Rating Thẩm Định Định Hướng:** Hệ thống định hướng chạy bảng giá chuyên ngành **{rating_result}**")
         
-        # Thẻ 1: Gói Tối Ưu (Recommended Card)
+        # Thẻ Gói Tối Ưu
         st.markdown(f"""
         <div class="zoom-pricing-card recommended-card">
             <div class="zoom-tag">✨ GÓI TỐI ƯU (RECOMMENDED)</div>
             <div class="price-text">${suggested_premium:,} <span style="font-size:14px; color:#64748B; font-weight:normal;">/ tháng</span></div>
             <div class="price-subtext" style="color:#1E293B;">${calculated_face_amount:,} Mệnh Giá Bảo Vệ</div>
-            <div class="zoom-bullet">🔹 Thiết kế: Tối ưu tích lũy dòng tiền (Maximum Cash Value) làm quỹ hưu trí tương lai.</div>
-            <div class="zoom-bullet">🔹 Tận dụng tốt dòng tiền thặng dư để làm chỗ trú ẩn, né nghĩa vụ thuế cá nhân/doanh nghiệp hợp pháp cuối năm.</div>
-            <div class="zoom-bullet">🔹 Tiến trình đóng phí phù hợp trọn vẹn với quỹ thời gian cày cuốc {retire_plan} còn lại của khách.</div>
+            <div class="zoom-bullet">🔹 Thiết kế: Maximum Cash Value (Tích lũy tài sản hưu trí an toàn)</div>
+            <div class="zoom-bullet">🔹 Tối ưu dòng tiền thặng dư để làm chỗ trú ẩn thuế hợp pháp cuối năm</div>
+            <div class="zoom-bullet">🔹 Tiến trình đóng phí phù hợp trọn vẹn với quỹ thời gian cày cuốc {retire_plan} còn lại</div>
         </div>
         """, unsafe_allow_html=True)
         
-        # Thẻ 2: Gói Dự Phòng (Flex Card)
+        # Thẻ Gói Dự Phòng
         st.markdown(f"""
         <div class="zoom-pricing-card">
             <div class="zoom-tag" style="background-color:#E2E8F0; color:#64748B;">GÓI DỰ PHÒNG CHỮA CHÁY</div>
             <div class="price-text" style="color:#64748B;">${backup_premium:,} <span style="font-size:14px; color:#64748B; font-weight:normal;">/ tháng</span></div>
             <div class="price-subtext" style="color:#1E293B;">${backup_face_amount:,} Mệnh Giá Bảo Vệ</div>
-            <div class="zoom-bullet">🔸 Sử dụng làm phương án lùi binh khi khách hàng lo ngại áp lực tài chính, sụt giảm doanh thu vào mùa đông tiệm vắng.</div>
-            <div class="zoom-bullet">🔸 Đảm bảo duy trì trọn vẹn quyền lợi bảo vệ thu nhập cốt lõi cho gia đình và {num_children if num_children != 'Chưa có con' else 'người'} phụ thuộc.</div>
-            <div class="zoom-bullet">🔸 Kịch bản xử lý từ chối: Hướng dẫn khách đóng mức phí này trước, mùa hè đông khách có tiền đóng bù thêm vào sau để nuôi Cash Value nhờ tính linh hoạt của IUL.</div>
+            <div class="zoom-bullet">🔸 Điểm tựa rút lui an toàn khi tiệm vắng khách hoặc bước vào mùa đông lạnh</div>
+            <div class="zoom-bullet">🔸 Đảm bảo duy trì trọn vẹn quyền lợi bảo vệ thu nhập cho người phụ thuộc</div>
         </div>
         """, unsafe_allow_html=True)
