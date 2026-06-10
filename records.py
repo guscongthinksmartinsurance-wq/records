@@ -236,11 +236,11 @@ if menu_selection == "PHÂN TÍCH CUỘC GỌI":
 
 
 # =====================================================================
-# CHẠY TÍNH NĂNG 2: FORM KHẢO SÁT & BÁO GIÁ THÔNG MINH
+# CHẠY TÍNH NĂNG 2: FORM KHẢO SÁT & GỢI Ý BÁO GIÁ CHIẾN LƯỢC CỦA ANH CONG
 # =====================================================================
-elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
+elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
     st.markdown("<h2 style='color:#1E293B; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#64748B; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#64748B; font-size:14px; margin-bottom:25px;'>Hệ thống gợi ý tầm giá định hướng chiến lược giúp sales mở lời đàm phán dòng tiền phù hợp với chân dung khách hàng.</p>", unsafe_allow_html=True)
     
     col_input, col_result = st.columns([1, 1], gap="large")
     
@@ -252,7 +252,7 @@ elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
         with c1:
             gender = st.selectbox("Giới tính", ["Nữ", "Nam"])
         with c2:
-            age = st.number_input("Tuổi hiện tại", min_value=1, max_value=100, value=35)
+            age = st.number_input("Tuổi hiện tại", min_value=0, max_value=100, value=35)
             
         st.markdown("<hr>", unsafe_allow_html=True)
         
@@ -262,9 +262,9 @@ elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
         health_status = st.radio(
             "Tình trạng bệnh lý hiện tại",
             [
-                "Khỏe mạnh hoàn toàn / Bệnh lý cực nhẹ (Cao máu nhẹ, huyết áp nhẹ, men gan cao nhẹ, tiền tiểu đường, viêm gan B không hoạt động)",
-                "Có bệnh lý nền rõ ràng (Tiểu đường, Combo tiểu đường + mỡ máu/cao máu, bướu tuyến giáp lành, sỏi thận, sỏi mật)",
-                "Bệnh lý nặng (Tim bẩm sinh, suy tim, suy thận, từng điều trị ung thư, đột quỵ, từng phẫu thuật nội tạng...)"
+                "🟢 Khỏe mạnh hoàn toàn / Bệnh lý cực nhẹ (Cao máu nhẹ, huyết áp nhẹ, men gan cao nhẹ, tiền tiểu đường, viêm gan B không hoạt động)",
+                "🟡 Có bệnh lý nền rõ ràng (Tiểu đường, Combo tiểu đường + mỡ máu/cao máu, bướu tuyến giáp lành, sỏi thận, sỏi mật)",
+                "🔴 Bệnh lý nặng (Tim bẩm sinh, suy tim, suy thận, từng điều trị ung thư, đột quỵ, từng phẫu thuật nội tạng...)"
             ]
         )
         
@@ -296,56 +296,70 @@ elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col_result:
-        # --- LOGIC THẨM ĐỊNH RATING SỨC KHỎE ---
+        # --- BƯỚC 1: XÁC ĐỊNH MỨC GIÁ GỐC THEO PHÂN KHÚC TUỔI CHUẨN ---
+        base_low, base_high = 150, 200  # Mặc định dưới 35 tuổi
+        
+        if 36 <= age <= 50:
+            base_low, base_high = 200, 400
+        elif 51 <= age <= 65:
+            base_low, base_high = 300, 500
+        elif age > 65:
+            base_low, base_high = 500, 800  # Phân khúc lão niên
+
+        # --- BƯỚC 2: TRA ĐỊNH HƯỚNG RATING VÀ TỰ ĐỘNG CỘNG PHẠT SỨC KHỎE SÒNG PHẲNG ---
         rating_result = "Standard NTBC"
+        risk_multiplier = 1.0  # Hệ số giữ nguyên cho nhóm khỏe mạnh
+        
         if lung_habit == "Có hút thuốc, vape, hoặc cần":
             rating_result = "Standard TBC"
+            risk_multiplier = 1.20  # Nhóm có khói tăng phạt 20%
         else:
             if "Có bệnh lý nền rõ ràng" in health_status:
                 rating_result = "Express Standard Non-Tobacco 1 (EX1)"
+                risk_multiplier = 1.15  # Nhóm bệnh lý nền EX1 tăng phạt 15% (An toàn về giá)
             elif "Bệnh lý nặng" in health_status:
                 rating_result = "Express Standard Non-Tobacco 2 (EX2)"
-                
-        # --- LOGIC ĐỊNH HƯỚNG DÒNG TIỀN PHÍ ĐÓNG ---
-        suggested_premium = 300
-        if job_title == "Thợ nail ăn chia 6/4":
-            suggested_premium = 180 if num_children in ["3", "4"] else 250
-        elif job_title == "Manager":
-            suggested_premium = 400
-        elif job_title == "Chủ tiệm":
-            if num_chairs == "3-5 ghế": suggested_premium = 450
-            elif num_chairs == "6-8 ghế": suggested_premium = 700
-            elif num_chairs == "Trên 10 ghế": suggested_premium = 1200
-                
-        if home_status == "Đang mướn nhà (Rent)" or time_in_us == "Dưới 3 năm":
-            suggested_premium = int(suggested_premium * 0.85)
-            
-        calculated_face_amount = suggested_premium * 700  
-        backup_premium = int(suggested_premium * 0.5)
-        backup_face_amount = int(calculated_face_amount * 0.5)
+                risk_multiplier = 1.35  # Nhóm bệnh lý nặng EX2 tăng phạt 35%
 
-        st.markdown("<h3 style='color:#1E293B; font-size:16px; font-weight:700; margin-bottom:15px;'>KẾT QUẢ PHÂN TÍCH BIỂU PHÍ KHUYẾN NGHỊ</h3>", unsafe_allow_html=True)
-        st.info(f"📋 **Rating Thẩm Định Định Hướng:** Hệ thống định hướng chạy bảng giá chuyên ngành **{rating_result}**")
+        # Áp trọng số sức khỏe vào tầm giá gốc
+        suggested_low = int(base_low * risk_multiplier)
+        suggested_high = int(base_high * risk_multiplier)
+
+        # --- BƯỚC 3: CO GIÃN THEO CHÂN DUNG DÒNG TIỀN NGHỀ NGHIỆP CỦA KHÁCH ---
+        # Nếu khách là đại gia ngành nail (Chủ tiệm lớn), đẩy cao định hướng để tư vấn trú ẩn thuế hợp pháp
+        if job_title == "Chủ tiệm" and num_chairs == "Trên 10 ghế":
+            suggested_low = int(suggested_low * 1.5)
+            suggested_high = int(suggested_high * 1.8)
+        # Nếu khách gánh nặng tài chính cao (Thợ nail đông con, đang mướn nhà), ghìm nhẹ về mức an toàn cận dưới
+        elif job_title == "Thợ nail ăn chia 6/4" and (num_children in ["3", "4"] or home_status == "Đang mướn nhà (Rent)"):
+            suggested_high = int(suggested_high * 0.85)
+
+        # Đóng gói số liệu cuối cùng cho hai Thẻ báo giá chiến lược
+        optimal_premium = int((suggested_low + suggested_high) / 2)
+        backup_premium = int(suggested_low)
+
+        # --- HIỂN THỊ KẾT QUẢ ĐỊNH HƯỚNG ---
+        st.markdown("<h3 style='color:#1E293B; font-size:16px; font-weight:700; margin-bottom:15px;'>KẾT QUẢ ĐỊNH HƯỚNG TẦM GIÁ CHIẾN LƯỢC</h3>", unsafe_allow_html=True)
+        st.info(f"📋 **Định hướng chạy bảng minh họa hãng:** Chạy cho khách ở Tab nhóm: **{rating_result}**")
         
-        # Thẻ Gói Tối Ưu
+        # Thẻ Gói Tối ưu
         st.markdown(f"""
         <div class="zoom-pricing-card recommended-card">
-            <div class="zoom-tag">✨ GÓI TỐI ƯU (RECOMMENDED)</div>
-            <div class="price-text">${suggested_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
-            <div class="price-subtext">${calculated_face_amount:,} Mệnh Giá Bảo Vệ</div>
-            <div class="zoom-bullet">🔹 Thiết kế: Maximum Cash Value (Tích lũy tài sản hưu trí an toàn)</div>
-            <div class="zoom-bullet">🔹 Tối ưu dòng tiền thặng dư để làm chỗ trú ẩn thuế hợp pháp cuối năm</div>
-            <div class="zoom-bullet">🔹 Tiến trình đóng phí phù hợp trọn vẹn với quỹ thời gian cày cuốc {retire_plan} còn lại</div>
+            <div class="zoom-tag">✨ TẦM GIÁ TỐI ƯU (RECOMMENDED)</div>
+            <div class="price-text">${optimal_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
+            <div class="price-subtext">Khung thương lượng đề xuất: ${suggested_low:,} - ${suggested_high:,} / tháng</div>
+            <div class="zoom-bullet">🔹 Định hướng thiết kế: Tập trung tối đa vào nuôi dòng tiền tích lũy (Maximum Cash Value) làm quỹ hưu trí tương lai cho khách.</div>
+            <div class="zoom-bullet">🔹 Định hướng kịch bản: {"Khai thác bài toán trú ẩn, giảm nghĩa vụ quyết toán thuế cuối năm cho chủ doanh nghiệp." if job_title == 'Chủ tiệm' else 'Tạo chỗ trú ẩn an toàn cho dòng tiền thặng dư, tăng tốc lãi kép miễn thuế.'}</div>
+            <div class="zoom-bullet">🔹 Tiến trình đóng phí phù hợp trọn vẹn với quỹ thời gian cày cuốc {retire_plan} còn lại của khách tại Mỹ.</div>
         </div>
         """, unsafe_allow_html=True)
         
-        # Thẻ Gói Dự Phòng
+        # Thẻ Gói Dự phòng
         st.markdown(f"""
         <div class="zoom-pricing-card">
-            <div class="zoom-tag" style="background-color:#232936; color:#94A3B8;">GÓI DỰ PHÒNG CHỮA CHÁY</div>
+            <div class="zoom-tag" style="background-color:#232936; color:#94A3B8;">PHƯƠNG ÁN DỰ PHÒNG CHỮA CHÁY</div>
             <div class="price-text" style="color:#94A3B8;">${backup_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
-            <div class="price-subtext">${backup_face_amount:,} Mệnh Giá Bảo Vệ</div>
-            <div class="zoom-bullet">🔸 Điểm tựa rút lui an toàn khi tiệm vắng khách hoặc bước vào mùa đông lạnh</div>
-            <div class="zoom-bullet">🔸 Đảm bảo duy trì trọn vẹn quyền lợi bảo vệ thu nhập cho người phụ thuộc</div>
+            <div class="zoom-bullet">🔸 Sử dụng làm phương án lùi binh khi khách hàng lo ngại áp lực kinh tế sụt giảm, tiệm vắng khách mùa đông lạnh hoặc lo gánh nặng trả góp nhà xe.</div>
+            <div class="zoom-bullet">🔸 Kịch bản xử lý từ chối: Hướng dẫn khách chốt ở mức an toàn này trước để kích hoạt trọn vẹn quyền lợi bảo vệ thu nhập cốt lõi cho gia đình, mùa hè đông khách có tiền thặng dư thì đóng bù thêm vào nuôi Cash Value sau nhờ tính linh hoạt của IUL.</div>
         </div>
         """, unsafe_allow_html=True)
