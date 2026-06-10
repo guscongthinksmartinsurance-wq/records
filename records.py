@@ -10,7 +10,7 @@ st.set_page_config(page_title="The Nexus | Bound By Trust", layout="wide")
 with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Inject thêm CSS bổ sung cho phần Form để lấy lại khối hộp xám mịn tệp màu kiểu Zoom
+# Inject thêm CSS bổ sung cho phần Form để sửa triệt để lỗi trắng nhách
 st.markdown("""
 <style>
     /* Giữ nguyên màu nền xám trắng sáng sủa tổng thể của app */
@@ -18,7 +18,7 @@ st.markdown("""
         background-color: #F8F9FA !important;
     }
     
-    /* ĐỒNG BỘ KHỐI HỘP HAI BÊN: Đổi sang màu xám đen sâu tinh tế để không bị trắng nhách */
+    /* ĐỒNG BỘ KHỐI HỘP HAI BÊN: Đổi sang màu xám đen sâu tinh tế để tạo mảng miếng tách biệt */
     .zoom-container-card {
         background-color: #161A26 !important;
         padding: 32px;
@@ -28,7 +28,7 @@ st.markdown("""
         margin-bottom: 24px;
     }
     
-    /* Thẻ hiển thị bảng giá kết quả bên phải - Tệp màu hoàn toàn với bên trái */
+    /* Thẻ hiển thị bảng giá kết quả bên phải - Tệp màu hoàn toàn với khối bên trái */
     .zoom-pricing-card {
         background-color: #161A26 !important;
         border-radius: 16px;
@@ -52,7 +52,7 @@ st.markdown("""
     
     /* HIGHLIGHT TIÊU ĐỀ KIỂU ZOOM CHUYÊN NGHIỆP */
     .zoom-highlight-header {
-        color: #38BDF8 !important; /* Đổi sang màu xanh Cyan sáng để nổi bật trên nền hộp tối */
+        color: #38BDF8 !important; /* Màu xanh Cyan sáng để nổi bật trên nền hộp tối */
         font-size: 16px;
         font-weight: 700;
         letter-spacing: 0.5px;
