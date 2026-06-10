@@ -10,54 +10,50 @@ st.set_page_config(page_title="The Nexus | Bound By Trust", layout="wide")
 with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Inject thêm CSS bổ sung cho phần Form để sửa triệt để lỗi trắng nhách
+# Inject thêm CSS bổ sung cho phần Form - Tối ưu hiển thị đa chế độ (Light/Dark Mode)
 st.markdown("""
 <style>
-    /* Giữ nguyên màu nền xám trắng sáng sủa tổng thể của app */
-    .main, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-        background-color: #F8F9FA !important;
-    }
-    
-    /* ĐỒNG BỘ KHỐI HỘP HAI BÊN: Đổi sang màu xám đen sâu tinh tế để tạo mảng miếng tách biệt */
+    /* 1. KHỐI HỘP HAI BÊN: Tự động dùng màu nền bề mặt hệ thống (Card Background) */
     .zoom-container-card {
-        background-color: #161A26 !important;
+        background-color: var(--background-color) !important;
         padding: 32px;
         border-radius: 16px;
-        border: 1px solid #232936;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--text-color);
+        opacity: 0.95;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
         margin-bottom: 24px;
     }
     
-    /* Thẻ hiển thị bảng giá kết quả bên phải - Tệp màu hoàn toàn với khối bên trái */
+    /* Thẻ hiển thị bảng giá kết quả bên phải */
     .zoom-pricing-card {
-        background-color: #161A26 !important;
+        background-color: var(--background-color) !important;
         border-radius: 16px;
         padding: 28px;
         margin-bottom: 20px;
-        border: 1px solid #232936;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--text-color);
+        opacity: 0.95;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
         transition: all 0.3s ease;
     }
     .zoom-pricing-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 12px 30px rgba(11, 92, 255, 0.15);
-        border-color: #0B5CFF;
+        border-color: #0B5CFF !important;
     }
     
-    /* Gói Tối Ưu Khuyên Dùng - Điểm nhấn viền xanh sáng */
+    /* Gói Tối Ưu Khuyên Dùng - Giữ viền xanh đặc trưng của Zoom */
     .recommended-card {
-        border: 1.5px solid #0B5CFF !important;
-        background: linear-gradient(180deg, #161A26 0%, #1A2234 100%) !important;
+        border: 2px solid #0B5CFF !important;
     }
     
-    /* HIGHLIGHT TIÊU ĐỀ KIỂU ZOOM CHUYÊN NGHIỆP */
+    /* 2. HIGHLIGHT TIÊU ĐỀ KIỂU ZOOM CHUYÊN NGHIỆP */
     .zoom-highlight-header {
-        color: #38BDF8 !important; /* Màu xanh Cyan sáng để nổi bật trên nền hộp tối */
+        color: #0B5CFF !important; /* Luôn giữ màu xanh thương hiệu Zoom */
         font-size: 16px;
         font-weight: 700;
         letter-spacing: 0.5px;
         text-transform: uppercase;
-        background-color: #1E2638;
+        background-color: rgba(11, 92, 255, 0.1) !important; /* Nền xanh nhạt trong suốt, tự thích ứng nền tối */
         padding: 8px 16px;
         border-radius: 8px;
         display: inline-block;
@@ -68,7 +64,7 @@ st.markdown("""
     /* Tag nhỏ nhãn hiệu */
     .zoom-tag {
         background-color: #0B5CFF;
-        color: white;
+        color: white !important;
         font-size: 11px;
         font-weight: bold;
         padding: 4px 12px;
@@ -82,27 +78,18 @@ st.markdown("""
     .price-text {
         font-size: 38px;
         font-weight: 800;
-        color: #38BDF8; /* Màu xanh Cyan sáng cực đẹp trên nền tối */
+        color: #0B5CFF !important; /* Màu xanh gốc của Zoom */
         margin: 10px 0;
         font-family: 'Inter', sans-serif;
     }
     
-    .price-subtext {
-        font-size: 20px;
-        font-weight: 700;
-        color: #FFFFFF;
-        margin-bottom: 15px;
-    }
-    
+    /* 3. ĐỒNG BỘ CHỮ: Ép dùng biến chữ hệ thống, tự động trắng khi nền đen, đen khi nền trắng */
+    .zoom-container-card label, 
+    .zoom-container-card p, 
+    .zoom-container-card span,
+    .price-subtext,
     .zoom-bullet {
-        color: #94A3B8;
-        font-size: 14px;
-        margin: 6px 0;
-    }
-
-    /* Chuyển toàn bộ chữ label, chữ điều hướng sang màu sáng dễ đọc trên nền hộp tối */
-    .zoom-container-card label, .zoom-container-card p, .zoom-container-card div {
-        color: #E2E8F0 !important;
+        color: var(--text-color) !important; 
         font-weight: 500 !important;
     }
     
@@ -111,10 +98,11 @@ st.markdown("""
         gap: 10px;
     }
 
-    /* Định dạng lại đường gạch ngang chia dòng trong khối tối */
+    /* Đường gạch ngang chia dòng tự động ăn theo màu chữ mờ */
     .zoom-container-card hr {
         border: 0;
-        border-top: 1px solid #232936 !important;
+        border-top: 1px solid var(--text-color) !important;
+        opacity: 0.2;
         margin: 24px 0 !important;
     }
 </style>
