@@ -210,110 +210,110 @@ else:
 
 with tab2:
     # --- BỐ CỤC CHÍNH CỦA TAB 2 ---
-st.markdown("<h2 style='color:#FFFFFF; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
-st.markdown("<p style='color:#94A3B8; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
-
-col_input, col_result = st.columns([1, 1], gap="large")
-
-with col_input:
-    st.markdown('<div class="zoom-panel-left">', unsafe_allow_html=True)
-    st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>1. THÔNG TIN KHÁCH HÀNG</h3>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#FFFFFF; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#94A3B8; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
     
-    c1, c2 = st.columns(2)
-    with c1:
-        gender = st.selectbox("Giới tính", ["Nữ", "Nam"])
-    with c2:
-        age = st.number_input("Tuổi hiện tại", min_value=1, max_value=100, value=35)
-        
-    st.markdown("<hr style='border:0; border-top:1px solid #232936; margin:20px 0;'>", unsafe_allow_html=True)
-    st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>2. TÌNH TRẠNG SỨC KHỎE & BỆNH LÝ</h3>", unsafe_allow_html=True)
+    col_input, col_result = st.columns([1, 1], gap="large")
     
-    lung_habit = st.radio("Thói quen lá phổi", ["Không hút thuốc", "Có hút thuốc, vape, hoặc cần"], horizontal=True)
-    health_status = st.selectbox(
-        "Tình trạng bệnh lý hiện tại",
-        [
-            "Khỏe mạnh hoàn toàn / Bệnh lý cực nhẹ (Cao máu, huyết áp nhẹ, men gan cao nhẹ, tiền tiểu đường, viêm gan B không hoạt động)",
-            "Có bệnh lý rõ ràng (Tiểu đường, Combo tiểu đường + mỡ máu/cao máu, bướu tuyến giáp lành, sỏi thận, sỏi mật)",
-            "Bệnh lý nặng (Tim bẩm sinh, suy tim, suy thận, từng điều trị ung thư, đột quỵ, từng phẫu thuật nội tạng...)"
-        ]
-    )
-    
-    st.markdown("<hr style='border:0; border-top:1px solid #232936; margin:20px 0;'>", unsafe_allow_html=True)
-    st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>3. KHẢO SÁT CÔNG VIỆC, GIA ĐÌNH & ĐỜI SỐNG</h3>", unsafe_allow_html=True)
-    
-    c3, c4 = st.columns(2)
-    with c3:
-        time_in_us = st.selectbox("Thời gian định cư ở Mỹ", ["Trên 3 năm", "Dưới 3 năm"])
-    with c4:
-        job_title = st.selectbox("Vị trí công việc", ["Thợ nail ăn chia 6/4", "Manager", "Chủ tiệm"])
+    with col_input:
+        st.markdown('<div class="zoom-panel-left">', unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>1. THÔNG TIN KHÁCH HÀNG</h3>", unsafe_allow_html=True)
         
-    num_chairs = "Không áp dụng"
-    if job_title in ["Manager", "Chủ tiệm"]:
-        num_chairs = st.selectbox("Quy mô số ghế của tiệm", ["3-5 ghế", "6-8 ghế", "Trên 10 ghế"])
-        
-    c5, c6 = st.columns(2)
-    with c5:
-        marital_status = st.selectbox("Tình trạng hôn nhân", ["Đã kết hôn", "Độc thân"])
-    with c6:
-        num_children = st.selectbox("Số lượng con cái", ["1", "2", "3", "4", "Chưa có con"])
-        
-    c7, c8 = st.columns(2)
-    with c7:
-        home_status = st.selectbox("Tình trạng nhà cửa tại Mỹ", ["Đã mua trả góp (Mortgage)", "Đang mướn nhà (Rent)"])
-    with c8:
-        retire_plan = st.selectbox("Dự kiến thời gian cày còn lại", ["10 - 20 năm nữa", "Trên 20 năm nữa", "Dưới 10 năm nữa"])
-        
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col_result:
-    # --- LOGIC QUY ĐỔI SỨC KHỎE VÀ DÒNG TIỀN ---
-    rating_result = "Standard NTBC"
-    if lung_habit == "Có hút thuốc, vape, hoặc cần":
-        rating_result = "Standard TBC"
-    else:
-        if "Có bệnh lý rõ ràng" in health_status:
-            rating_result = "Express Standard Non-Tobacco 1 (EX1)"
-        elif "Bệnh lý nặng" in health_status:
-            rating_result = "Express Standard Non-Tobacco 2 (EX2)"
+        c1, c2 = st.columns(2)
+        with c1:
+            gender = st.selectbox("Giới tính", ["Nữ", "Nam"])
+        with c2:
+            age = st.number_input("Tuổi hiện tại", min_value=1, max_value=100, value=35)
             
-    suggested_premium = 300
-    if job_title == "Thợ nail ăn chia 6/4":
-        suggested_premium = 180 if num_children in ["3", "4"] else 250
-    elif job_title == "Manager":
-        suggested_premium = 400
-    elif job_title == "Chủ tiệm":
-        if num_chairs == "3-5 ghế": suggested_premium = 450
-        elif num_chairs == "6-8 ghế": suggested_premium = 700
-        elif num_chairs == "Trên 10 ghế": suggested_premium = 1200
-            
-    if home_status == "Đang mướn nhà (Rent)" or time_in_us == "Dưới 3 năm":
-        suggested_premium = int(suggested_premium * 0.85)
+        st.markdown("<hr style='border:0; border-top:1px solid #232936; margin:20px 0;'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>2. TÌNH TRẠNG SỨC KHỎE & BỆNH LÝ</h3>", unsafe_allow_html=True)
         
-    calculated_face_amount = suggested_premium * 700  
-    backup_premium = int(suggested_premium * 0.5)
-    backup_face_amount = int(calculated_face_amount * 0.5)
-
-    # --- HIỂN THỊ KẾT QUẢ CARD ĐỒNG BỘ MÀU ---
-    st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>KẾT QUẢ PHÂN TÍCH BIỂU PHÍ KHUYẾN NGHỊ</h3>", unsafe_allow_html=True)
-    st.info(f"📋 **Rating Thẩm Định Định Hướng:** Đang chạy bảng giá chuyên ngành **{rating_result}**")
+        lung_habit = st.radio("Thói quen lá phổi", ["Không hút thuốc", "Có hút thuốc, vape, hoặc cần"], horizontal=True)
+        health_status = st.selectbox(
+            "Tình trạng bệnh lý hiện tại",
+            [
+                "Khỏe mạnh hoàn toàn / Bệnh lý cực nhẹ (Cao máu, huyết áp nhẹ, men gan cao nhẹ, tiền tiểu đường, viêm gan B không hoạt động)",
+                "Có bệnh lý rõ ràng (Tiểu đường, Combo tiểu đường + mỡ máu/cao máu, bướu tuyến giáp lành, sỏi thận, sỏi mật)",
+                "Bệnh lý nặng (Tim bẩm sinh, suy tim, suy thận, từng điều trị ung thư, đột quỵ, từng phẫu thuật nội tạng...)"
+            ]
+        )
+        
+        st.markdown("<hr style='border:0; border-top:1px solid #232936; margin:20px 0;'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>3. KHẢO SÁT CÔNG VIỆC, GIA ĐÌNH & ĐỜI SỐNG</h3>", unsafe_allow_html=True)
+        
+        c3, c4 = st.columns(2)
+        with c3:
+            time_in_us = st.selectbox("Thời gian định cư ở Mỹ", ["Trên 3 năm", "Dưới 3 năm"])
+        with c4:
+            job_title = st.selectbox("Vị trí công việc", ["Thợ nail ăn chia 6/4", "Manager", "Chủ tiệm"])
+            
+        num_chairs = "Không áp dụng"
+        if job_title in ["Manager", "Chủ tiệm"]:
+            num_chairs = st.selectbox("Quy mô số ghế của tiệm", ["3-5 ghế", "6-8 ghế", "Trên 10 ghế"])
+            
+        c5, c6 = st.columns(2)
+        with c5:
+            marital_status = st.selectbox("Tình trạng hôn nhân", ["Đã kết hôn", "Độc thân"])
+        with c6:
+            num_children = st.selectbox("Số lượng con cái", ["1", "2", "3", "4", "Chưa có con"])
+            
+        c7, c8 = st.columns(2)
+        with c7:
+            home_status = st.selectbox("Tình trạng nhà cửa tại Mỹ", ["Đã mua trả góp (Mortgage)", "Đang mướn nhà (Rent)"])
+        with c8:
+            retire_plan = st.selectbox("Dự kiến thời gian cày còn lại", ["10 - 20 năm nữa", "Trên 20 năm nữa", "Dưới 10 năm nữa"])
+            
+        st.markdown('</div>', unsafe_allow_html=True)
     
-    # Gói Tối ưu
-    st.markdown(f"""
-    <div class="zoom-pricing-card recommended-card">
-        <div class="zoom-tag">✨ GÓI TỐI ƯU (RECOMMENDED)</div>
-        <div class="price-text">${suggested_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
-        <div class="price-subtext">${calculated_face_amount:,} Mệnh Giá Bảo Vệ</div>
-        <div class="zoom-bullet">🔹 Thiết kế: Maximum Cash Value (Tích lũy hưu trí)</div>
-        <div class="zoom-bullet">🔹 Tối ưu dòng tiền thặng dư an toàn để trú ẩn thuế hợp pháp</div>
-    </div>
-    """, unsafe_allow_html=True)
+    with col_result:
+        # --- LOGIC QUY ĐỔI SỨC KHỎE VÀ DÒNG TIỀN ---
+        rating_result = "Standard NTBC"
+        if lung_habit == "Có hút thuốc, vape, hoặc cần":
+            rating_result = "Standard TBC"
+        else:
+            if "Có bệnh lý rõ ràng" in health_status:
+                rating_result = "Express Standard Non-Tobacco 1 (EX1)"
+            elif "Bệnh lý nặng" in health_status:
+                rating_result = "Express Standard Non-Tobacco 2 (EX2)"
+                
+        suggested_premium = 300
+        if job_title == "Thợ nail ăn chia 6/4":
+            suggested_premium = 180 if num_children in ["3", "4"] else 250
+        elif job_title == "Manager":
+            suggested_premium = 400
+        elif job_title == "Chủ tiệm":
+            if num_chairs == "3-5 ghế": suggested_premium = 450
+            elif num_chairs == "6-8 ghế": suggested_premium = 700
+            elif num_chairs == "Trên 10 ghế": suggested_premium = 1200
+                
+        if home_status == "Đang mướn nhà (Rent)" or time_in_us == "Dưới 3 năm":
+            suggested_premium = int(suggested_premium * 0.85)
+            
+        calculated_face_amount = suggested_premium * 700  
+        backup_premium = int(suggested_premium * 0.5)
+        backup_face_amount = int(calculated_face_amount * 0.5)
     
-    # Gói Dự phòng
-    st.markdown(f"""
-    <div class="zoom-pricing-card">
-        <div class="zoom-tag" style="background-color:#232936; color:#94A3B8;">GÓI DỰ PHÒNG CHỮA CHÁY</div>
-        <div class="price-text" style="color:#94A3B8;">${backup_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
-        <div class="price-subtext" style="color:#FFFFFF;">${backup_face_amount:,} Mệnh Giá Bảo Vệ</div>
-        <div class="zoom-bullet">🔸 Phương án rút lui an toàn giảm áp lực tài chính vào mùa đông</div>
-    </div>
-    """, unsafe_allow_html=True)
+        # --- HIỂN THỊ KẾT QUẢ CARD ĐỒNG BỘ MÀU ---
+        st.markdown("<h3 style='color:#FFFFFF; font-size:16px; font-weight:700; margin-bottom:15px;'>KẾT QUẢ PHÂN TÍCH BIỂU PHÍ KHUYẾN NGHỊ</h3>", unsafe_allow_html=True)
+        st.info(f"📋 **Rating Thẩm Định Định Hướng:** Đang chạy bảng giá chuyên ngành **{rating_result}**")
+        
+        # Gói Tối ưu
+        st.markdown(f"""
+        <div class="zoom-pricing-card recommended-card">
+            <div class="zoom-tag">✨ GÓI TỐI ƯU (RECOMMENDED)</div>
+            <div class="price-text">${suggested_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
+            <div class="price-subtext">${calculated_face_amount:,} Mệnh Giá Bảo Vệ</div>
+            <div class="zoom-bullet">🔹 Thiết kế: Maximum Cash Value (Tích lũy hưu trí)</div>
+            <div class="zoom-bullet">🔹 Tối ưu dòng tiền thặng dư an toàn để trú ẩn thuế hợp pháp</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Gói Dự phòng
+        st.markdown(f"""
+        <div class="zoom-pricing-card">
+            <div class="zoom-tag" style="background-color:#232936; color:#94A3B8;">GÓI DỰ PHÒNG CHỮA CHÁY</div>
+            <div class="price-text" style="color:#94A3B8;">${backup_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
+            <div class="price-subtext" style="color:#FFFFFF;">${backup_face_amount:,} Mệnh Giá Bảo Vệ</div>
+            <div class="zoom-bullet">🔸 Phương án rút lui an toàn giảm áp lực tài chính vào mùa đông</div>
+        </div>
+        """, unsafe_allow_html=True)
