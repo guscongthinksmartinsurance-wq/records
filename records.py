@@ -6,6 +6,92 @@ import time
 # --- CẤU HÌNH GIAO DIỆN ---
 st.set_page_config(page_title="The Nexus | Behavioral Analysis", layout="wide")
 
+# Inject thêm CSS phong cách Zoom (Mịn màng, bo tròn, đổ bóng soft, tone sáng nhẹ tinh tế)
+st.markdown("""
+<style>
+    /* Custom style cho các Tab */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 24px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        white-space: pre-wrap;
+        background-color: transparent;
+        border-radius: 4px;
+        color: #6E7687;
+        font-weight: 600;
+        font-size: 16px;
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        color: #0B5CFF;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #0B5CFF !important;
+        border-bottom-color: #0B5CFF !important;
+    }
+
+    /* Khung nhập liệu tinh tế kiểu Zoom */
+    .zoom-panel-left {
+        background-color: #FFFFFF;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        border: 1px solid #EAF0F6;
+    }
+    
+    /* Thiết kế thẻ Card bảng giá của Zoom */
+    .zoom-pricing-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 28px;
+        margin-bottom: 20px;
+        border: 1px solid #EAF0F6;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+    }
+    .zoom-pricing-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(11, 92, 255, 0.08);
+    }
+    .recommended-card {
+        border: 1.5px solid #0B5CFF;
+        position: relative;
+    }
+    .zoom-tag {
+        background-color: #0B5CFF;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .price-text {
+        font-size: 38px;
+        font-weight: 800;
+        color: #0B5CFF;
+        margin: 10px 0;
+        font-family: 'Inter', sans-serif;
+    }
+    .price-subtext {
+        font-size: 20px;
+        font-weight: 700;
+        color: #111625;
+        margin-bottom: 15px;
+    }
+    .zoom-bullet {
+        color: #6E7687;
+        font-size: 14px;
+        margin: 6px 0;
+        display: flex;
+        align-items: center;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Đọc file CSS riêng
 with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
@@ -25,6 +111,7 @@ def lam_sach_bao_cao(text_markdown):
     return "\n".join(cleaned_lines)
 
 # --- SIDEBAR: BẢNG ĐIỀU KHIỂN ---
+tab1, tab2 = st.tabs(["🎙️ PHÂN TÍCH CUỘC GỌI", "🎯 FORM KHẢO SÁT & BÁO GIÁ"])
 with st.sidebar:
     st.title("⚙️ Điều khiển")
     google_api_key = st.secrets.get("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY")
@@ -40,7 +127,8 @@ with st.sidebar:
     st.info("Dòng IUL - National Life Group")
 
 # --- XỬ LÝ CHÍNH ---
-st.title("🎯 The Nexus: Phân tích Records")
+with tab1:
+    st.markdown("<h2 style='color:#1E3A8A; font-size:24px; margin-bottom:15px;'>Hệ Thống Phân Tích Tâm Lý Hành Vi</h2>", unsafe_allow_html=True)
 
 if google_api_key:
     genai.configure(api_key=google_api_key)
@@ -121,3 +209,158 @@ if google_api_key:
                 st.error(f"Lỗi: {e}")
 else:
     st.warning("Anh nhập API Key ở Sidebar nhé!")
+
+with tab2:
+    st.markdown("<h2 style='color:#111625; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#6E7687; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
+    
+    # Chia bố cục thành 2 cột đối xứng mượt mà (Tỷ lệ 5:5)
+    col_input, col_result = st.columns([1, 1], gap="large")
+    
+    with col_input:
+        st.markdown('<div class="zoom-panel-left">', unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#111625; font-size:16px; font-weight:700; margin-bottom:15px;'>1. THÔNG TIN KHÁCH HÀNG</h3>", unsafe_allow_html=True)
+        
+        # Hàng ngang: Giới tính & Tuổi
+        c1, c2 = st.columns(2)
+        with c1:
+            gender = st.selectbox("Giới tính", ["Nữ", "Nam"])
+        with c2:
+            age = st.number_input("Tuổi hiện tại", min_value=1, max_value=100, value=35)
+            
+        st.markdown("<hr style='border:0; border-top:1px solid #EAF0F6; margin:20px 0;'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#111625; font-size:16px; font-weight:700; margin-bottom:15px;'>2. TÌNH TRẠNG SỨC KHỎE & BỆNH LÝ</h3>", unsafe_allow_html=True)
+        
+        lung_habit = st.radio("Thói quen lá phổi", ["Không hút thuốc", "Có hút thuốc, vape, hoặc cần"], horizontal=True)
+        
+        health_status = st.selectbox(
+            "Tình trạng bệnh lý hiện tại",
+            [
+                "Khỏe mạnh hoàn toàn / Bệnh lý cực nhẹ (Cao máu, huyết áp nhẹ, men gan cao nhẹ, tiền tiểu đường, viêm gan B không hoạt động)",
+                "Có bệnh lý rõ ràng (Tiểu đường, Combo tiểu đường + mỡ máu/cao máu, bướu tuyến giáp lành, sỏi thận, sỏi mật)",
+                "Bệnh lý nặng (Tim bẩm sinh, suy tim, suy thận, từng điều trị ung thư, đột quỵ, từng phẫu thuật nội tạng...)"
+            ]
+        )
+        
+        st.markdown("<hr style='border:0; border-top:1px solid #EAF0F6; margin:20px 0;'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#111625; font-size:16px; font-weight:700; margin-bottom:15px;'>3. KHẢO SÁT CÔNG VIỆC, GIA ĐÌNH & ĐỜI SỐNG</h3>", unsafe_allow_html=True)
+        
+        # Hàng ngang: Thời gian ở Mỹ & Công việc
+        c3, c4 = st.columns(2)
+        with c3:
+            time_in_us = st.selectbox("Thời gian định cư ở Mỹ", ["Trên 3 năm", "Dưới 3 năm"])
+        with c4:
+            job_title = st.selectbox("Vị trí công việc", ["Thợ nail ăn chia 6/4", "Manager", "Chủ tiệm"])
+            
+        # Hiển thị số ghế tiệm nếu là Chủ hoặc Manager
+        num_chairs = "Không áp dụng"
+        if job_title in ["Manager", "Chủ tiệm"]:
+            num_chairs = st.selectbox("Quy mô số ghế của tiệm", ["3-5 ghế", "6-8 ghế", "Trên 10 ghế"])
+            
+        # Hàng ngang: Hôn nhân & Số con
+        c5, c6 = st.columns(2)
+        with c5:
+            marital_status = st.selectbox("Tình trạng hôn nhân", ["Đã kết hôn", "Độc thân"])
+        with c6:
+            num_children = st.selectbox("Số lượng con cái", ["1", "2", "3", "4", "Chưa có con"])
+            
+        # Hàng ngang: Nhà cửa & Nghỉ hưu
+        c7, c8 = st.columns(2)
+        with c7:
+            home_status = st.selectbox("Tình trạng nhà cửa tại Mỹ", ["Đã mua trả góp (Mortgage)", "Đang mướn nhà (Rent)"])
+        with c8:
+            retire_plan = st.selectbox("Dự kiến thời gian cày còn lại", ["10 - 20 năm nữa", "Trên 20 năm nữa", "Dưới 10 năm nữa"])
+            
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col_result:
+        # --- LOGIC QUY ĐỔI SỨC KHỎE RA RATING THẨM ĐỊNH ---
+        rating_result = "Standard NTBC"
+        if lung_habit == "Có hút thuốc, vape, hoặc cần":
+            rating_result = "Standard TBC"
+        else:
+            if "Có bệnh lý rõ ràng" in health_status:
+                rating_result = "Express Standard Non-Tobacco 1 (EX1)"
+            elif "Bệnh lý nặng" in health_status:
+                rating_result = "Express Standard Non-Tobacco 2 (EX2)"
+                
+        # --- LOGIC TÍNH TOÁN DÒNG TIỀN VÀ MỨC GIÁ GỢI Ý ---
+        suggested_premium = 300  # Mức cơ bản mặc định
+        
+        if job_title == "Thợ nail ăn chia 6/4":
+            if num_children in ["3", "4"]:
+                suggested_premium = 180  # Con đông gánh nặng nhiều, hạ phí gợi ý
+            else:
+                suggested_premium = 250
+        elif job_title == "Manager":
+            suggested_premium = 400
+        elif job_title == "Chủ tiệm":
+            if num_chairs == "3-5 ghế":
+                suggested_premium = 450
+            elif num_chairs == "6-8 ghế":
+                suggested_premium = 700
+            elif num_chairs == "Trên 10 ghế":
+                suggested_premium = 1200
+                
+        # Điều chỉnh tinh chỉnh nhẹ theo Nhà cửa & Thời gian ở Mỹ
+        if home_status == "Đang mướn nhà (Rent)" or time_in_us == "Dưới 3 năm":
+            suggested_premium = int(suggested_premium * 0.85)  # Giảm 15% để an toàn dòng tiền
+            
+        # Giả định mệnh giá tra cứu tự động dựa trên mức giá chạy được (Sau này kết nối trực tiếp vào sheet của anh)
+        calculated_face_amount = suggested_premium * 700  
+        backup_premium = int(suggested_premium * 0.5)
+        backup_face_amount = int(calculated_face_amount * 0.5)
+
+        # --- HIỂN THỊ KẾT QUẢ GIAO DIỆN THEO PHONG CÁCH PRICING CARDS CỦA ZOOM ---
+        st.markdown("<h3 style='color:#111625; font-size:16px; font-weight:700; margin-bottom:15px;'>KẾT QUẢ PHÂN TÍCH BIỂU PHÍ KHUYẾN NGHỊ</h3>", unsafe_allow_html=True)
+        
+        # Chỉ định hiển thị Tab dữ liệu cần Run
+        st.info(f"📋 **Rating Thẩm Định Định Hướng:** Đang chạy bảng giá chuyên ngành **{rating_result}** dựa trên chẩn đoán bệnh lý lý thuyết.")
+        
+        # 1. Thẻ Báo Giá Gói Tối Ưu (Khuyên dùng)
+        st.markdown(f"""
+        <div class="zoom-pricing-card recommended-card">
+            <div class="zoom-tag">✨ GÓI TỐI ƯU (RECOMMENDED)</div>
+            <div class="price-text">${suggested_premium:,} <span style="font-size:14px; color:#6E7687; font-weight:normal;">/ tháng</span></div>
+            <div class="price-subtext">${calculated_face_amount:,} Mệnh Giá Bảo Vệ</div>
+            <div class="zoom-bullet">🔹 Định hướng thiết kế: Maximum Cash Value (Tích lũy tài sản hưu trí)</div>
+            <div class="zoom-bullet">🔹 Tận dụng tối đa dòng tiền thặng dư an toàn để trú ẩn và né thuế hợp pháp cuối năm</div>
+            <div class="zoom-bullet">🔹 Phù hợp hoàn hảo với kế hoạch cày cuốc {retire_plan} của khách hàng</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # 2. Thẻ Báo Giá Gói Dự Phòng (Linh hoạt khi vắng khách)
+        st.markdown(f"""
+        <div class="zoom-pricing-card">
+            <div class="zoom-tag" style="background-color:#EAF0F6; color:#6E7687;">GÓI DỰ PHÒNG CHỮA CHÁY</div>
+            <div class="price-text" style="color:#6E7687;">${backup_premium:,} <span style="font-size:14px; color:#6E7687; font-weight:normal;">/ tháng</span></div>
+            <div class="price-subtext" style="color:#111625;">${backup_face_amount:,} Mệnh Giá Bảo Vệ</div>
+            <div class="zoom-bullet">🔸 Dùng làm phương án rút lui an toàn khi khách lo ngại áp lực tài chính vào mùa đông</div>
+            <div class="zoom-bullet">🔸 Đảm bảo giữ quyền lợi bảo vệ cơ bản cho {num_children} cháu nhỏ phụ thuộc gia đình</div>
+            <div class="zoom-bullet">🔸 Nhắc nhở khách tận dụng tính năng linh hoạt đóng bù của IUL khi mùa hè tiệm đông khách trở lại</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Thao tác xuất text nhanh để lưu trữ hồ sơ khách hàng
+        st.divider()
+        raw_quote_text = f"""=======================================================
+HỒ SƠ KHẢO SÁT & BIỂU PHÍ ĐỀ XUẤT IUL (THE NEXUS)
+=======================================================
+- Tuổi/Giới tính: {age} tuổi / {gender}
+- Nhóm Thẩm Định: {rating_result}
+- Định hướng dòng tiền: Khách hàng là {job_title} ({num_chairs}), gia đình {num_children} con, tình trạng {home_status}.
+-------------------------------------------------------
+[GÓI TỐI ƯU KHUYÊN DÙNG]:
+  • Phí đóng: ${suggested_premium}/tháng
+  • Mệnh giá bảo vệ: ${calculated_face_amount:,}
+[GÓI DỰ PHÒNG LINH HOẠT]:
+  • Phí đóng: ${backup_premium}/tháng
+  • Mệnh giá bảo vệ: ${backup_face_amount:,}
+======================================================="""
+        
+        st.download_button(
+            label="Tải dữ liệu báo giá sạch 📥",
+            data=raw_quote_text,
+            file_name=f"Quote_IUL_{gender}_{age}.txt",
+            mime="text/plain"
+        )
