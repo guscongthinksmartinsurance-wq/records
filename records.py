@@ -275,7 +275,7 @@ elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
         with c3:
             time_in_us = st.selectbox("Thời gian định cư ở Mỹ", ["Trên 3 năm", "Dưới 3 năm"])
         with c4:
-            job_title = st.selectbox("Vị trí công việc", ["Thợ nail ăn chia 6/4", "Manager", "Chủ tiệm"])
+            job_title = st.selectbox("Vị trí công việc", ["Thợ nail", "Manager", "Chủ tiệm"])
             
         num_chairs = "Không áp dụng"
         if job_title in ["Manager", "Chủ tiệm"]:
@@ -331,7 +331,7 @@ elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
             suggested_low = int(suggested_low * 1.5)
             suggested_high = int(suggested_high * 1.8)
         # Nếu khách gánh nặng tài chính cao (Thợ nail đông con, đang mướn nhà), ghìm nhẹ về mức an toàn cận dưới
-        elif job_title == "Thợ nail ăn chia 6/4" and (num_children in ["3", "4"] or home_status == "Đang mướn nhà (Rent)"):
+        elif job_title == "Thợ nail" and (num_children in ["3", "4"] or home_status == "Đang mướn nhà (Rent)"):
             suggested_high = int(suggested_high * 0.85)
 
         # Đóng gói số liệu cuối cùng cho hai Thẻ báo giá chiến lược
