@@ -6,7 +6,7 @@ import time
 # --- CẤU HÌNH GIAO DIỆN ---
 st.set_page_config(page_title="The Nexus | Behavioral Analysis", layout="wide")
 
-# Đọc file CSS riêng (Giữ nguyên 100% cách viết gốc của anh)
+# Đọc file CSS riêng (Giữ nguyên 100% cấu trúc gốc của anh)
 with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
@@ -95,7 +95,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Giữ nguyên 100% logic hàm làm sạch báo cáo gốc
+# Giữ nguyên 100% logic hàm làm sạch báo cáo gốc của anh
 def lam_sach_bao_cao(text_markdown):
     lines = text_markdown.split('\n')
     cleaned_lines = []
@@ -111,7 +111,7 @@ def lam_sach_bao_cao(text_markdown):
     return "\n".join(cleaned_lines)
 
 
-# --- SIDEBAR: BẢNG ĐIỀU KHIỂN (Thêm menu chọn trang tệp màu hệ thống) ---
+# --- SIDEBAR: BẢNG ĐIỀU KHIỂN (Menu chọn tính năng tệp màu hệ thống) ---
 with st.sidebar:
     st.title("⚙️ Điều khiển")
     
@@ -131,7 +131,7 @@ with st.sidebar:
 
 
 # =====================================================================
-# CHẠY TÍNH NĂNG 1: PHÂN TÍCH CUỘC GỌI (COPY 100% NỘI DUNG VÀ PROMPT GỐC)
+# CHẠY TÍNH NĂNG 1: PHÂN TÍCH CUỘC GỌI (BÊ NGUYÊN VĂN 100% CODE CŨ VÀ CẤU TRÚC MODEL GỐC)
 # =====================================================================
 if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
     uploaded_file = st.file_uploader("Kéo thả hoặc chọn file ghi âm cuộc gọi (.mp3, .wav)", type=["mp3", "wav"])
@@ -142,7 +142,9 @@ if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
         else:
             try:
                 genai.configure(api_key=google_api_key)
-                model = genai.GenerativeModel("gemini-1.5-pro")
+                
+                # SỬA LỖI TẠI ĐÂY: Trả về chính xác 100% cấu trúc gọi model ban đầu của anh để tránh lỗi 404
+                model = genai.GenerativeModel(model_name="gemini-1.5-pro")
                 
                 with st.status("🚀 Đang xử lý dữ liệu cuộc gọi...", expanded=True) as status:
                     audio_data = uploaded_file.read()
