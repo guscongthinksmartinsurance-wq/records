@@ -92,6 +92,11 @@ st.markdown("""
         color: #1E293B !important;
         font-weight: 500 !important;
     }
+
+    /* Tối ưu khoảng cách hiển thị của các nút lựa chọn hàng dọc */
+    div[data-testid="stRadio"] > div {
+        gap: 10px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
