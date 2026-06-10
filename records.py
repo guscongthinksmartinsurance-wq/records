@@ -238,7 +238,7 @@ if menu_selection == "PHÂN TÍCH CUỘC GỌI":
 # =====================================================================
 # CHẠY TÍNH NĂNG 2: FORM KHẢO SÁT & GỢI Ý BÁO GIÁ CHIẾN LƯỢC CỦA ANH CONG
 # =====================================================================
-elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
+elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
     st.markdown("<h2 style='color:#1E293B; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#64748B; font-size:14px; margin-bottom:25px;'>Hệ thống gợi ý tầm giá định hướng chiến lược giúp sales mở lời đàm phán dòng tiền phù hợp với chân dung khách hàng.</p>", unsafe_allow_html=True)
     
@@ -262,9 +262,9 @@ elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
         health_status = st.radio(
             "Tình trạng bệnh lý hiện tại",
             [
-                "🟢 Khỏe mạnh hoàn toàn / Bệnh lý cực nhẹ (Cao máu nhẹ, huyết áp nhẹ, men gan cao nhẹ, tiền tiểu đường, viêm gan B không hoạt động)",
-                "🟡 Có bệnh lý nền rõ ràng (Tiểu đường, Combo tiểu đường + mỡ máu/cao máu, bướu tuyến giáp lành, sỏi thận, sỏi mật)",
-                "🔴 Bệnh lý nặng (Tim bẩm sinh, suy tim, suy thận, từng điều trị ung thư, đột quỵ, từng phẫu thuật nội tạng...)"
+                "Khỏe mạnh hoàn toàn / Bệnh lý cực nhẹ (Cao máu nhẹ, huyết áp nhẹ, men gan cao nhẹ, tiền tiểu đường, viêm gan B không hoạt động)",
+                "Có bệnh lý nền rõ ràng (Tiểu đường, Combo tiểu đường + mỡ máu/cao máu, bướu tuyến giáp lành, sỏi thận, sỏi mật)",
+                "Bệnh lý nặng (Tim bẩm sinh, suy tim, suy thận, từng điều trị ung thư, đột quỵ, từng phẫu thuật nội tạng...)"
             ]
         )
         
