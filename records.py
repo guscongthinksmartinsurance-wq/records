@@ -223,9 +223,9 @@ if menu_selection == "PHÂN TÍCH CUỘC GỌI":
 
 
 # =====================================================================
-# CHẠY TÍNH NĂNG 2: FORM KHẢO SÁT & BÁO GIÁ THÔNG MINH (ZOOM UNIFIED STYLE)
+# CHẠY TÍNH NĂNG 2: FORM KHẢO SÁT & BÁO GIÁ THÔNG MINH
 # =====================================================================
-elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
+elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
     st.markdown("<h2 style='color:#1E293B; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#64748B; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
     
@@ -245,12 +245,14 @@ elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
         
         st.markdown('<div class="zoom-highlight-header">2. Tình Trạng Sức Khỏe</div>', unsafe_allow_html=True)
         lung_habit = st.radio("Thói quen lá phổi", ["Không hút thuốc", "Có hút thuốc, vape, hoặc cần"], horizontal=True)
-        health_status = st.selectbox(
+        
+        # ĐÃ CẬP NHẬT TẠI ĐÂY: Chuyển đổi từ selectbox sang radio hiển thị 3 hàng tích chọn trực quan
+        health_status = st.radio(
             "Tình trạng bệnh lý hiện tại",
             [
-                "Khỏe mạnh hoàn toàn / Bệnh lý cực nhẹ (Cao máu nhẹ, huyết áp nhẹ, men gan cao nhẹ, tiền tiểu đường, viêm gan B không hoạt động/không dùng thuốc)",
-                "Có bệnh lý nền rõ ràng (Tiểu đường, Combo tiểu đường + mỡ máu/cao máu, bướu tuyến giáp lành, sỏi thận, sỏi mật)",
-                "Bệnh lý nặng (Tim bẩm sinh, suy tim, suy thận, từng điều trị ung thư, đột quỵ, từng phẫu thuật nội tạng...)"
+                "🟢 Khỏe mạnh hoàn toàn / Bệnh lý cực nhẹ (Cao máu nhẹ, huyết áp nhẹ, men gan cao nhẹ, tiền tiểu đường, viêm gan B không hoạt động)",
+                "🟡 Có bệnh lý nền rõ ràng (Tiểu đường, Combo tiểu đường + mỡ máu/cao máu, bướu tuyến giáp lành, sỏi thận, sỏi mật)",
+                "🔴 Bệnh lý nặng (Tim bẩm sinh, suy tim, suy thận, từng điều trị ung thư, đột quỵ, từng phẫu thuật nội tạng...)"
             ]
         )
         
@@ -310,7 +312,6 @@ elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
         backup_premium = int(suggested_premium * 0.5)
         backup_face_amount = int(calculated_face_amount * 0.5)
 
-        # --- HIỂN THỊ KẾT QUẢ CARD THEO PHONG CÁCH ZOOM ---
         st.markdown("<h3 style='color:#1E293B; font-size:16px; font-weight:700; margin-bottom:15px;'>KẾT QUẢ PHÂN TÍCH BIỂU PHÍ KHUYẾN NGHỊ</h3>", unsafe_allow_html=True)
         st.info(f"📋 **Rating Thẩm Định Định Hướng:** Hệ thống định hướng chạy bảng giá chuyên ngành **{rating_result}**")
         
