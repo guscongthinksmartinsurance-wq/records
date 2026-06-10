@@ -250,7 +250,7 @@ if menu_selection == "PHÂN TÍCH CUỘC GỌI":
 # =====================================================================
 # CHẠY TÍNH NĂNG 2: FORM KHẢO SÁT & BÁO GIÁ THÔNG MINH
 # =====================================================================
-elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
+elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
     st.markdown("<h2 style='color:#1E293B; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#64748B; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
     
