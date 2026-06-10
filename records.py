@@ -4,7 +4,7 @@ import os
 import time
 
 # --- CẤU HÌNH GIAO DIỆN ---
-st.set_page_config(page_title="The Nexus | Behavioral Analysis", layout="wide")
+st.set_page_config(page_title="The Nexus | Bound By Trust", layout="wide")
 
 # Đọc file CSS riêng (Giữ nguyên 100% cấu trúc gốc của anh)
 with open("style.css") as f:
@@ -118,7 +118,7 @@ with st.sidebar:
     # Menu chọn tính năng đặt trên Sidebar đầu tiên
     menu_selection = st.radio(
         "Lựa chọn tính năng",
-        ["🎙️ PHÂN TÍCH CUỘC GỌI", "🎯 FORM KHẢO SÁT & BÁO GIÁ"],
+        ["PHÂN TÍCH CUỘC GỌI", "FORM KHẢO SÁT & BÁO GIÁ"],
         index=0
     )
     
@@ -140,7 +140,7 @@ with st.sidebar:
 # =====================================================================
 # CHẠY TÍNH NĂNG 1: PHÂN TÍCH CUỘC GỌI (BÊ NGUYÊN VĂN 100% CODE CŨ VÀ CẤU TRÚC MODEL GỐC)
 # =====================================================================
-if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
+if menu_selection == "PHÂN TÍCH CUỘC GỌI":
     if google_api_key:
         genai.configure(api_key=google_api_key)
         available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
@@ -225,7 +225,7 @@ if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
 # =====================================================================
 # CHẠY TÍNH NĂNG 2: FORM KHẢO SÁT & BÁO GIÁ THÔNG MINH (ZOOM UNIFIED STYLE)
 # =====================================================================
-elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
+elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
     st.markdown("<h2 style='color:#1E293B; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#64748B; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
     
