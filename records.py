@@ -10,54 +10,54 @@ st.set_page_config(page_title="The Nexus | Bound By Trust", layout="wide")
 with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Inject thêm CSS bổ sung cho phần Form để Highlight tiêu đề và bo góc kiểu Zoom trên nền sáng mượt
+# Inject thêm CSS bổ sung cho phần Form để lấy lại khối hộp xám mịn tệp màu kiểu Zoom
 st.markdown("""
 <style>
-    /* Ép toàn bộ màu nền hệ thống về tone xám trắng mịn đồng nhất */
+    /* Giữ nguyên màu nền xám trắng sáng sủa tổng thể của app */
     .main, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
         background-color: #F8F9FA !important;
     }
     
-    /* Đồng bộ khối hộp trắng viền xám tinh tế cho cả 2 trang */
+    /* ĐỒNG BỘ KHỐI HỘP HAI BÊN: Đổi sang màu xám đen sâu tinh tế để không bị trắng nhách */
     .zoom-container-card {
-        background-color: #FFFFFF !important;
+        background-color: #161A26 !important;
         padding: 32px;
         border-radius: 16px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid #232936;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         margin-bottom: 24px;
     }
     
-    /* Thẻ hiển thị bảng giá kết quả */
+    /* Thẻ hiển thị bảng giá kết quả bên phải - Tệp màu hoàn toàn với bên trái */
     .zoom-pricing-card {
-        background-color: #FFFFFF !important;
+        background-color: #161A26 !important;
         border-radius: 16px;
         padding: 28px;
         margin-bottom: 20px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
+        border: 1px solid #232936;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
     }
     .zoom-pricing-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 12px 30px rgba(11, 92, 255, 0.08);
+        box-shadow: 0 12px 30px rgba(11, 92, 255, 0.15);
         border-color: #0B5CFF;
     }
     
-    /* Gói Tối Ưu Khuyên Dùng */
+    /* Gói Tối Ưu Khuyên Dùng - Điểm nhấn viền xanh sáng */
     .recommended-card {
         border: 1.5px solid #0B5CFF !important;
-        background: linear-gradient(180deg, #FFFFFF 0%, #F4F7FF 100%) !important;
+        background: linear-gradient(180deg, #161A26 0%, #1A2234 100%) !important;
     }
     
     /* HIGHLIGHT TIÊU ĐỀ KIỂU ZOOM CHUYÊN NGHIỆP */
     .zoom-highlight-header {
-        color: #0B5CFF !important;
+        color: #38BDF8 !important; /* Đổi sang màu xanh Cyan sáng để nổi bật trên nền hộp tối */
         font-size: 16px;
         font-weight: 700;
         letter-spacing: 0.5px;
         text-transform: uppercase;
-        background-color: #F4F7FF;
+        background-color: #1E2638;
         padding: 8px 16px;
         border-radius: 8px;
         display: inline-block;
@@ -78,24 +78,44 @@ st.markdown("""
         text-transform: uppercase;
     }
     
-    /* Giá tiền hiển thị */
+    /* Giá tiền hiển thị to rõ nổi bật */
     .price-text {
         font-size: 38px;
         font-weight: 800;
-        color: #0B5CFF;
+        color: #38BDF8; /* Màu xanh Cyan sáng cực đẹp trên nền tối */
         margin: 10px 0;
         font-family: 'Inter', sans-serif;
     }
     
-    /* Chữ nhãn nhập liệu */
-    .zoom-container-card label, .zoom-container-card p {
-        color: #1E293B !important;
-        font-weight: 500 !important;
+    .price-subtext {
+        font-size: 20px;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin-bottom: 15px;
+    }
+    
+    .zoom-bullet {
+        color: #94A3B8;
+        font-size: 14px;
+        margin: 6px 0;
     }
 
-    /* Tối ưu khoảng cách hiển thị của các nút lựa chọn hàng dọc */
+    /* Chuyển toàn bộ chữ label, chữ điều hướng sang màu sáng dễ đọc trên nền hộp tối */
+    .zoom-container-card label, .zoom-container-card p, .zoom-container-card div {
+        color: #E2E8F0 !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Làm mịn khoảng cách dòng lựa chọn của Radio */
     div[data-testid="stRadio"] > div {
         gap: 10px;
+    }
+
+    /* Định dạng lại đường gạch ngang chia dòng trong khối tối */
+    .zoom-container-card hr {
+        border: 0;
+        border-top: 1px solid #232936 !important;
+        margin: 24px 0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -246,12 +266,11 @@ elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
         with c2:
             age = st.number_input("Tuổi hiện tại", min_value=1, max_value=100, value=35)
             
-        st.markdown("<hr style='border:0; border-top:1px solid #E2E8F0; margin:24px 0;'>", unsafe_allow_html=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
         
         st.markdown('<div class="zoom-highlight-header">2. Tình Trạng Sức Khỏe</div>', unsafe_allow_html=True)
         lung_habit = st.radio("Thói quen lá phổi", ["Không hút thuốc", "Có hút thuốc, vape, hoặc cần"], horizontal=True)
         
-        # ĐÃ CẬP NHẬT TẠI ĐÂY: Chuyển đổi từ selectbox sang radio hiển thị 3 hàng tích chọn trực quan
         health_status = st.radio(
             "Tình trạng bệnh lý hiện tại",
             [
@@ -261,7 +280,7 @@ elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
             ]
         )
         
-        st.markdown("<hr style='border:0; border-top:1px solid #E2E8F0; margin:24px 0;'>", unsafe_allow_html=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
         
         st.markdown('<div class="zoom-highlight-header">3. Dòng Tiền & Đời Sống tại Mỹ</div>', unsafe_allow_html=True)
         c3, c4 = st.columns(2)
@@ -324,8 +343,8 @@ elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
         st.markdown(f"""
         <div class="zoom-pricing-card recommended-card">
             <div class="zoom-tag">✨ GÓI TỐI ƯU (RECOMMENDED)</div>
-            <div class="price-text">${suggested_premium:,} <span style="font-size:14px; color:#64748B; font-weight:normal;">/ tháng</span></div>
-            <div class="price-subtext" style="color:#1E293B;">${calculated_face_amount:,} Mệnh Giá Bảo Vệ</div>
+            <div class="price-text">${suggested_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
+            <div class="price-subtext">${calculated_face_amount:,} Mệnh Giá Bảo Vệ</div>
             <div class="zoom-bullet">🔹 Thiết kế: Maximum Cash Value (Tích lũy tài sản hưu trí an toàn)</div>
             <div class="zoom-bullet">🔹 Tối ưu dòng tiền thặng dư để làm chỗ trú ẩn thuế hợp pháp cuối năm</div>
             <div class="zoom-bullet">🔹 Tiến trình đóng phí phù hợp trọn vẹn với quỹ thời gian cày cuốc {retire_plan} còn lại</div>
@@ -335,9 +354,9 @@ elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
         # Thẻ Gói Dự Phòng
         st.markdown(f"""
         <div class="zoom-pricing-card">
-            <div class="zoom-tag" style="background-color:#E2E8F0; color:#64748B;">GÓI DỰ PHÒNG CHỮA CHÁY</div>
-            <div class="price-text" style="color:#64748B;">${backup_premium:,} <span style="font-size:14px; color:#64748B; font-weight:normal;">/ tháng</span></div>
-            <div class="price-subtext" style="color:#1E293B;">${backup_face_amount:,} Mệnh Giá Bảo Vệ</div>
+            <div class="zoom-tag" style="background-color:#232936; color:#94A3B8;">GÓI DỰ PHÒNG CHỮA CHÁY</div>
+            <div class="price-text" style="color:#94A3B8;">${backup_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
+            <div class="price-subtext">${backup_face_amount:,} Mệnh Giá Bảo Vệ</div>
             <div class="zoom-bullet">🔸 Điểm tựa rút lui an toàn khi tiệm vắng khách hoặc bước vào mùa đông lạnh</div>
             <div class="zoom-bullet">🔸 Đảm bảo duy trì trọn vẹn quyền lợi bảo vệ thu nhập cho người phụ thuộc</div>
         </div>
