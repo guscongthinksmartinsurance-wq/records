@@ -6,54 +6,68 @@ import time
 # --- CẤU HÌNH GIAO DIỆN ---
 st.set_page_config(page_title="The Nexus | Behavioral Analysis", layout="wide")
 
-# --- INJECT CSS ĐỒNG BỘ HAI KHỐI HỘP TRÊN NỀN SÁNG MỊN ---
+# Inject CSS đồng bộ toàn bộ website trên nền xám trắng mịn màng
 st.markdown("""
 <style>
-    /* Trả lại màu nền sáng mịn tổng thể của app */
+    /* Ép toàn bộ màu nền hệ thống về tone xám trắng mịn cao cấp */
     .main, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
         background-color: #F8F9FA !important;
     }
     
-    /* KHỐI BÊN TRÁI: Nhập liệu - Đổi sang màu xám mịn tệp hoàn toàn với bên phải */
-    .zoom-panel-left {
+    /* Đồng bộ giao diện Sidebar */
+    [data-testid="stSidebar"] {
         background-color: #FFFFFF !important;
-        padding: 30px;
+        border-right: 1px solid #E2E8F0 !important;
+    }
+    
+    /* Thiết kế khối hộp (Panel/Card) đồng nhất cho cả 2 trang */
+    .zoom-container-card {
+        background-color: #FFFFFF !important;
+        padding: 32px;
         border-radius: 16px;
         border: 1px solid #E2E8F0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        margin-bottom: 24px;
     }
     
-    /* Chỉnh màu chữ label bên trái cho rõ ràng trên nền sáng */
-    .zoom-panel-left label, .zoom-panel-left p {
-        color: #1E293B !important;
-        font-weight: 500;
-    }
-    
-    /* KHỐI BÊN PHẢI: Thẻ Card kết quả - Đồng bộ chất liệu và màu sắc với bên trái */
+    /* Hiệu ứng mượt mà khi di chuột qua các thẻ báo giá */
     .zoom-pricing-card {
         background-color: #FFFFFF !important;
         border-radius: 16px;
         padding: 28px;
         margin-bottom: 20px;
         border: 1px solid #E2E8F0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
         transition: all 0.3s ease;
     }
-    
-    /* Hiệu ứng nhích nhẹ mượt mà khi hover chuột qua card kết quả */
     .zoom-pricing-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 12px 30px rgba(11, 92, 255, 0.08);
         border-color: #0B5CFF;
     }
     
-    /* Đường viền xanh nhấn nổi bật riêng cho Gói Khuyên Dùng */
+    /* Thẻ được khuyên dùng đặc biệt */
     .recommended-card {
         border: 1.5px solid #0B5CFF !important;
-        background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
+        background: linear-gradient(180deg, #FFFFFF 0%, #F4F7FF 100%) !important;
     }
     
-    /* Tag thương hiệu màu xanh Zoom */
+    /* HIGHLIGHT TIÊU ĐỀ KIỂU ZOOM CHUYÊN NGHIỆP */
+    .zoom-highlight-header {
+        color: #0B5CFF !important;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        background-color: #F4F7FF;
+        padding: 8px 16px;
+        border-radius: 8px;
+        display: inline-block;
+        margin-bottom: 20px;
+        border-left: 4px solid #0B5CFF;
+    }
+    
+    /* Tag nhãn nhỏ bên trong card */
     .zoom-tag {
         background-color: #0B5CFF;
         color: white;
@@ -64,10 +78,9 @@ st.markdown("""
         display: inline-block;
         margin-bottom: 12px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
     
-    /* Font số tiền lớn màu xanh đặc trưng của Zoom, sắc nét trên nền sáng */
+    /* Font số tiền lớn rõ nét */
     .price-text {
         font-size: 38px;
         font-weight: 800;
@@ -76,24 +89,17 @@ st.markdown("""
         font-family: 'Inter', sans-serif;
     }
     
-    .price-subtext {
-        font-size: 20px;
-        font-weight: 700;
-        color: #1E293B;
-        margin-bottom: 15px;
+    /* Font chữ nhãn nhập liệu */
+    label, p {
+        color: #1E293B !important;
+        font-weight: 500;
     }
     
-    .zoom-bullet {
-        color: #64748B;
-        font-size: 14px;
-        margin: 6px 0;
-    }
-    
-    /* Định dạng lại đường gạch ngang chia dòng cho tinh tế */
+    /* Đường gạch ngang tinh tế */
     hr {
         border: 0;
         border-top: 1px solid #E2E8F0 !important;
-        margin: 20px 0 !important;
+        margin: 24px 0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -116,13 +122,21 @@ def lam_sach_bao_cao(text_markdown):
             cleaned_lines.append(line_clean)
     return "\n".join(cleaned_lines)
 
-# --- SIDEBAR: BẢNG ĐIỀU KHIỂN ---
-tab1, tab2 = st.tabs(["🎙️ PHÂN TÍCH CUỘC GỌI", "🎯 FORM KHẢO SÁT & BÁO GIÁ"])
+# --- 2. SIDEBAR: ĐIỀU HƯỚNG TẬP TRUNG ---
 with st.sidebar:
-    st.title("⚙️ Điều khiển")
-    google_api_key = st.secrets.get("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    st.title("⚙️ HỆ THỐNG")
+    
+    # Đưa menu lựa chọn tính năng lên Sidebar giống Zoom
+    menu_selection = st.radio(
+        "Lựa chọn tính năng",
+        ["🎙️ PHÂN TÍCH CUỘC GỌI", "🎯 FORM KHẢO SÁT & BÁO GIÁ"],
+        index=0
+    )
+    
+    st.divider()
+    google_api_key = st.secrets.get("GOOGLE_API_KEY", "")
     if not google_api_key:
-        google_api_key = st.text_input("API Key", type="password")
+        google_api_key = st.text_input("Nhập Google API Key:", type="password")
     
     st.markdown("---")
     # Thông số độ gắt cho anh Công tùy chỉnh
@@ -133,7 +147,7 @@ with st.sidebar:
     st.info("Dòng IUL - National Life Group")
 
 # --- XỬ LÝ CHÍNH ---
-with tab1:
+if menu_selection == "🎙️ PHÂN TÍCH CUỘC GỌI":
     st.markdown("<h2 style='color:#1E3A8A; font-size:24px; margin-bottom:15px;'>Hệ Thống Phân Tích Tâm Lý Hành Vi</h2>", unsafe_allow_html=True)
 
 if google_api_key:
@@ -216,17 +230,17 @@ if google_api_key:
 else:
     st.warning("Anh nhập API Key ở Sidebar nhé!")
 
-with tab2:
-    # --- BỐ CỤC CHÍNH CỦA TAB 2 (Giữ nguyên phần form và logic của anh) ---
+elif menu_selection == "🎯 FORM KHẢO SÁT & BÁO GIÁ":
     st.markdown("<h2 style='color:#1E293B; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#64748B; font-size:14px; margin-bottom:25px;'>Hệ thống tự động phân tích sức khỏe bệnh lý và dòng tiền tài chính thực tế để gợi ý mức phí tối ưu.</p>", unsafe_allow_html=True)
     
     col_input, col_result = st.columns([1, 1], gap="large")
     
     with col_input:
-        st.markdown('<div class="zoom-panel-left">', unsafe_allow_html=True)
-        st.markdown("<h3 style='color:#1E293B; font-size:16px; font-weight:700; margin-bottom:15px;'>1. THÔNG TIN KHÁCH HÀNG</h3>", unsafe_allow_html=True)
+        # Bọc panel nhập liệu vào khối hộp màu trắng viền xám tinh tế
+        st.markdown('<div class="zoom-container-card">', unsafe_allow_html=True)
         
+        st.markdown('<div class="zoom-highlight-header">1. Thông Tin Khách Hàng</div>', unsafe_allow_html=True)
         c1, c2 = st.columns(2)
         with c1:
             gender = st.selectbox("Giới tính", ["Nữ", "Nam"])
@@ -234,8 +248,7 @@ with tab2:
             age = st.number_input("Tuổi hiện tại", min_value=1, max_value=100, value=35)
             
         st.markdown("<hr>", unsafe_allow_html=True)
-        st.markdown("<h3 style='color:#1E293B; font-size:16px; font-weight:700; margin-bottom:15px;'>2. TÌNH TRẠNG SỨC KHỎE & BỆNH LÝ</h3>", unsafe_allow_html=True)
-        
+        st.markdown('<div class="zoom-highlight-header">2. Tình Trạng Sức Khỏe</div>', unsafe_allow_html=True)
         lung_habit = st.radio("Thói quen lá phổi", ["Không hút thuốc", "Có hút thuốc, vape, hoặc cần"], horizontal=True)
         health_status = st.selectbox(
             "Tình trạng bệnh lý hiện tại",
@@ -247,8 +260,7 @@ with tab2:
         )
         
         st.markdown("<hr>", unsafe_allow_html=True)
-        st.markdown("<h3 style='color:#1E293B; font-size:16px; font-weight:700; margin-bottom:15px;'>3. KHẢO SÁT CÔNG VIỆC, GIA ĐÌNH & ĐỜI SỐNG</h3>", unsafe_allow_html=True)
-        
+        st.markdown('<div class="zoom-highlight-header">3. Dòng Tiền & Đời Sống tại Mỹ</div>', unsafe_allow_html=True)
         c3, c4 = st.columns(2)
         with c3:
             time_in_us = st.selectbox("Thời gian định cư ở Mỹ", ["Trên 3 năm", "Dưới 3 năm"])
@@ -272,9 +284,9 @@ with tab2:
             retire_plan = st.selectbox("Dự kiến thời gian cày còn lại", ["10 - 20 năm nữa", "Trên 20 năm nữa", "Dưới 10 năm nữa"])
             
         st.markdown('</div>', unsafe_allow_html=True)
-    
+
     with col_result:
-        # --- LOGIC QUY ĐỔI SỨC KHỎE VÀ DÒNG TIỀN ---
+        # --- LOGIC PHÂN TÍCH RATING SỨC KHỎE ---
         rating_result = "Standard NTBC"
         if lung_habit == "Có hút thuốc, vape, hoặc cần":
             rating_result = "Standard TBC"
@@ -284,6 +296,7 @@ with tab2:
             elif "Bệnh lý nặng" in health_status:
                 rating_result = "Express Standard Non-Tobacco 2 (EX2)"
                 
+        # --- LOGIC TÍNH PHÍ GỢI Ý ĐỊNH HƯỚNG ---
         suggested_premium = 300
         if job_title == "Thợ nail ăn chia 6/4":
             suggested_premium = 180 if num_children in ["3", "4"] else 250
@@ -300,28 +313,28 @@ with tab2:
         calculated_face_amount = suggested_premium * 700  
         backup_premium = int(suggested_premium * 0.5)
         backup_face_amount = int(calculated_face_amount * 0.5)
-    
-        # --- HIỂN THỊ KẾT QUẢ CARD ĐỒNG BỘ MÀU VỚI BÊN TRÁI ---
+
+        # --- HIỂN THỊ CỘT BIỂU PHÍ KẾT QUẢ TỆP MÀU TUYỆT ĐỐI ---
         st.markdown("<h3 style='color:#1E293B; font-size:16px; font-weight:700; margin-bottom:15px;'>KẾT QUẢ PHÂN TÍCH BIỂU PHÍ KHUYẾN NGHỊ</h3>", unsafe_allow_html=True)
-        st.info(f"📋 **Rating Thẩm Định Định Hướng:** Đang chạy bảng giá chuyên ngành **{rating_result}**")
+        st.info(f"📋 **Rating Thẩm Định Định Hướng:** Hệ thống định hướng chạy bảng giá **{rating_result}**")
         
-        # Gói Tối ưu
+        # Thẻ 1: Gói Tối ưu (Recommended)
         st.markdown(f"""
         <div class="zoom-pricing-card recommended-card">
             <div class="zoom-tag">✨ GÓI TỐI ƯU (RECOMMENDED)</div>
             <div class="price-text">${suggested_premium:,} <span style="font-size:14px; color:#64748B; font-weight:normal;">/ tháng</span></div>
-            <div class="price-subtext">${calculated_face_amount:,} Mệnh Giá Bảo Vệ</div>
-            <div class="zoom-bullet">🔹 Thiết kế: Maximum Cash Value (Tích lũy hưu trí)</div>
-            <div class="zoom-bullet">🔹 Tối ưu dòng tiền thặng dư an toàn để trú ẩn thuế hợp pháp</div>
+            <div class="price-subtext" style="color:#1E293B;">${calculated_face_amount:,} Mệnh Giá Bảo Vệ</div>
+            <div class="zoom-bullet">🔹 Thiết kế: Maximum Cash Value (Tích lũy tài sản hưu trí an toàn)</div>
+            <div class="zoom-bullet">🔹 Trú ẩn và tối ưu hóa thặng dư dòng tiền để giảm tải nghĩa vụ thuế cuối năm</div>
         </div>
         """, unsafe_allow_html=True)
         
-        # Gói Dự phòng
+        # Thẻ 2: Gói Dự phòng
         st.markdown(f"""
         <div class="zoom-pricing-card">
             <div class="zoom-tag" style="background-color:#E2E8F0; color:#64748B;">GÓI DỰ PHÒNG CHỮA CHÁY</div>
             <div class="price-text" style="color:#64748B;">${backup_premium:,} <span style="font-size:14px; color:#64748B; font-weight:normal;">/ tháng</span></div>
-            <div class="price-subtext">${backup_face_amount:,} Mệnh Giá Bảo Vệ</div>
-            <div class="zoom-bullet">🔸 Phương án rút lui an toàn giảm áp lực tài chính vào mùa đông</div>
+            <div class="price-subtext" style="color:#1E293B;">${backup_face_amount:,} Mệnh Giá Bảo Vệ</div>
+            <div class="zoom-bullet">🔸 Điểm tựa rút lui an toàn khi tiệm vắng khách hoặc bước vào mùa đông lạnh</div>
         </div>
         """, unsafe_allow_html=True)
