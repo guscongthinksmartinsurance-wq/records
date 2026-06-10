@@ -240,7 +240,7 @@ if menu_selection == "PHÂN TÍCH CUỘC GỌI":
 # =====================================================================
 elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
     st.markdown("<h2 style='color:#1E293B; font-size:26px; font-weight:700; margin-bottom:5px;'>Khảo Sát Khách Hàng Nail & Báo Giá IUL</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#64748B; font-size:14px; margin-bottom:25px;'>Hệ thống gợi ý tầm giá định hướng chiến lược giúp sales mở lời đàm phán dòng tiền phù hợp với chân dung khách hàng.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#64748B; font-size:14px; margin-bottom:25px;'>Hệ thống gợi ý tầm giá định hướng giúp sales phán đoán dòng tiền phù hợp với chân dung khách hàng.</p>", unsafe_allow_html=True)
     
     col_input, col_result = st.columns([1, 1], gap="large")
     
@@ -339,17 +339,17 @@ elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
         backup_premium = int(suggested_low)
 
         # --- HIỂN THỊ KẾT QUẢ ĐỊNH HƯỚNG ---
-        st.markdown("<h3 style='color:#1E293B; font-size:16px; font-weight:700; margin-bottom:15px;'>KẾT QUẢ ĐỊNH HƯỚNG TẦM GIÁ CHIẾN LƯỢC</h3>", unsafe_allow_html=True)
-        st.info(f"📋 **Định hướng chạy bảng minh họa hãng:** Chạy cho khách ở Tab nhóm: **{rating_result}**")
+        st.markdown("<h3 style='color:#1E293B; font-size:16px; font-weight:700; margin-bottom:15px;'>KẾT QUẢ ĐỊNH HƯỚNG TẦM GIÁ</h3>", unsafe_allow_html=True)
+        st.info(f"📋 **Định hướng chạy bảng minh họa:** Chạy cho khách ở Tab nhóm: **{rating_result}**")
         
         # Thẻ Gói Tối ưu
         st.markdown(f"""
         <div class="zoom-pricing-card recommended-card">
-            <div class="zoom-tag">✨ TẦM GIÁ TỐI ƯU (RECOMMENDED)</div>
+            <div class="zoom-tag">TẦM GIÁ TỐI ƯU (RECOMMENDED)</div>
             <div class="price-text">${optimal_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
             <div class="price-subtext">Khung thương lượng đề xuất: ${suggested_low:,} - ${suggested_high:,} / tháng</div>
             <div class="zoom-bullet">🔹 Định hướng thiết kế: Tập trung tối đa vào nuôi dòng tiền tích lũy (Maximum Cash Value) làm quỹ hưu trí tương lai cho khách.</div>
-            <div class="zoom-bullet">🔹 Định hướng kịch bản: {"Khai thác bài toán trú ẩn, giảm nghĩa vụ quyết toán thuế cuối năm cho chủ doanh nghiệp." if job_title == 'Chủ tiệm' else 'Tạo chỗ trú ẩn an toàn cho dòng tiền thặng dư, tăng tốc lãi kép miễn thuế.'}</div>
+            <div class="zoom-bullet">🔹 Định hướng kịch bản: {"Khai thác bài toán trú ẩn, giảm nghĩa vụ quyết toán thuế cuối năm cho chủ doanh nghiệp." if job_title == 'Chủ tiệm' else 'Tạo chỗ trú ẩn an toàn cho dòng tiền dư muốn tiết kiêm, tăng tốc lãi kép miễn thuế.'}</div>
             <div class="zoom-bullet">🔹 Tiến trình đóng phí phù hợp trọn vẹn với quỹ thời gian cày cuốc {retire_plan} còn lại của khách tại Mỹ.</div>
         </div>
         """, unsafe_allow_html=True)
@@ -359,7 +359,7 @@ elif menu_selection == "FORM KHẢO SÁT & BÁO GIÁ":
         <div class="zoom-pricing-card">
             <div class="zoom-tag" style="background-color:#232936; color:#94A3B8;">PHƯƠNG ÁN DỰ PHÒNG CHỮA CHÁY</div>
             <div class="price-text" style="color:#94A3B8;">${backup_premium:,} <span style="font-size:14px; color:#94A3B8; font-weight:normal;">/ tháng</span></div>
-            <div class="zoom-bullet">🔸 Sử dụng làm phương án lùi binh khi khách hàng lo ngại áp lực kinh tế sụt giảm, tiệm vắng khách mùa đông lạnh hoặc lo gánh nặng trả góp nhà xe.</div>
-            <div class="zoom-bullet">🔸 Kịch bản xử lý từ chối: Hướng dẫn khách chốt ở mức an toàn này trước để kích hoạt trọn vẹn quyền lợi bảo vệ thu nhập cốt lõi cho gia đình, mùa hè đông khách có tiền thặng dư thì đóng bù thêm vào nuôi Cash Value sau nhờ tính linh hoạt của IUL.</div>
+            <div class="zoom-bullet">🔸 Sử dụng làm phương án phụ khi khách hàng lo ngại áp lực kinh tế sụt giảm, tiệm vắng khách mùa đông lạnh hoặc lo gánh nặng trả góp nhà xe.</div>
+            <div class="zoom-bullet">🔸 Kịch bản xử lý từ chối: Hướng dẫn khách tham gia ở mức an toàn này trước để kích hoạt trọn vẹn quyền lợi bảo vệ thu nhập cốt lõi cho gia đình, mùa hè đông khách có tiền dư nhiều hơn thì có thể làm nên gói cao hơn vào nuôi Cash Value sau nhờ tính linh hoạt của IUL.</div>
         </div>
         """, unsafe_allow_html=True)
